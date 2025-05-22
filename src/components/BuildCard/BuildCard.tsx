@@ -3,7 +3,7 @@ import BuildPending from '../../assets/icons/build-pending.svg'
 import BuildFail from '../../assets/icons/build-fail.svg'
 import BuildUnknown from '../../assets/icons/build-unknown.svg'
 import { useContext, useEffect, useState } from 'react'
-import { getBuildStatus, getDate, getModuleArray, whenDateIs } from '../../helpers'
+import { getBuildStatus, getDate, whenDateIs } from '../../helpers'
 import { Build, dataObj } from '../../types'
 import { AppContext } from '../../AppContext'
 import ProgressBar from '../ProgressBar/ProgressBar'
@@ -25,7 +25,7 @@ export default function BuildCard(props: Props) {
     } = props
 
     const {
-        id,
+        _id,
         name,
         classifier,
         date,
@@ -41,7 +41,6 @@ export default function BuildCard(props: Props) {
 
     const getStatusIcon = () => {
         const status = getBuildStatus(build)
-        console.log(status)
         return status === 'success' ? BuildOk
             : status === 'unknown' ? BuildUnknown : BuildFail
     }
@@ -69,7 +68,7 @@ export default function BuildCard(props: Props) {
     return (
         <div
             className={`buildcard__container${darkMode ? '--dark' : ''}`}
-            onClick={() => setOpenModal(id || build.classifier + '__' + build.target_branch)}
+            onClick={() => setOpenModal(_id || '')}
             style={{
                 backgroundImage: `linear-gradient(to right bottom, ${darkMode ? 'black' : 'white'}, ${getStatusBG()})`,
                 animationDelay: `${delay || '0'}`
@@ -91,7 +90,7 @@ export default function BuildCard(props: Props) {
                 </div> */}
                 <ProgressBar
                     label="Score"
-                    arrData={getModuleArray(modules)}
+                    arrData={modules}
                     colors={{ "success": "#00b500", "failure": "#e70000" }}
                     objKey="status"
                     percentageFor='success'

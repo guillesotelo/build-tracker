@@ -168,10 +168,11 @@ export interface ModuleInfo {
 }
 
 export interface Build {
+    _id?: string;
     classifier: string;
     date: string;
     target_branch: string;
-    modules: Record<string, ModuleInfo>;
+    modules: ModuleInfo[];
     id?: string
     name?: string
     tags?: dataObj[]

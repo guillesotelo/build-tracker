@@ -121,10 +121,10 @@ export const randomColors = (array: any[]) => {
 
 export const getBuildStatus = (build: Build) => {
     const moduleStats = new Map()
-    Object.keys(build.modules).forEach(key => {
-        if (build.modules[key].status === 'success') moduleStats.set('success', (moduleStats.get('success') || 0) + 1)
-        // if (build.modules[key].status === 'pending') moduleStats.set('pending', (moduleStats.get('pending') || 0) + 1)
-        if (build.modules[key].status === 'failure') moduleStats.set('failure', (moduleStats.get('failure') || 0) + 1)
+    build.modules.forEach(module => {
+        if (module.status?.toLowerCase() === 'success') moduleStats.set('success', (moduleStats.get('success') || 0) + 1)
+        // if (module.status === 'pending') moduleStats.set('pending', (moduleStats.get('pending') || 0) + 1)
+        if (module.status?.toLowerCase() === 'failure' || module.status?.toLowerCase() === 'skipped') moduleStats.set('failure', (moduleStats.get('failure') || 0) + 1)
     })
 
     const status = moduleStats.entries() ? Object.keys(build.modules).length === moduleStats.get('success') ? 'success'
@@ -135,7 +135,7 @@ export const getBuildStatus = (build: Build) => {
 
 export const getBuildSuccessRate = (build: Build) => {
     const modules = typeof build.modules === 'string' ? JSON.parse(build.modules || '{}') : build.modules
-    const succeeded = Object.keys(modules).filter(key => modules[key].status === 'success').length
+    const succeeded = Object.keys(modules).filter(key => modules[key].status?.toLowerCase() === 'success').length
     const total = Object.keys(modules).length
     return succeeded && total ? `${(succeeded * 100 / total).toFixed(1)}%` : ''
 }
@@ -174,12 +174,25 @@ export const whenDateIs = (date: Date | string | number | undefined) => {
 
 export const getModuleArray = (modules: dataObj) => {
     return Object.keys(modules).map(key => {
+        const status = modules[key].status && modules[key].status.toLowerCase().includes('success')
+            || modules[key].Status && modules[key].Status.toLowerCase().includes('success') ?
+            'success' : 'failure'
+
         return {
             ...modules[key],
+            status,
             name: key,
             org: null,
             art: modules[key].org.art,
             solution: modules[key].org.solution,
         }
     })
+}
+
+export const countOccurrences = (arr: dataObj[], key: string, value: any) => {
+    let count = 0
+    arr.forEach(item => {
+        if (item[key] === value) count++
+    })
+    return count
 }

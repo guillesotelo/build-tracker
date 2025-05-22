@@ -5,7 +5,7 @@ import { Build, dataObj, ModuleInfo, onChangeEventType } from "../../types"
 import { AppContext } from "../../AppContext"
 import ModulesTable from "../../components/ModulesTable/ModulesTable"
 import { moduleHeaders } from "../../constants/tableHeaders"
-import { capitalizeFirstLetter, getBuildName, getDate, getModuleArray, randomColors } from "../../helpers"
+import { capitalizeFirstLetter, countOccurrences, getBuildName, getDate, getModuleArray, randomColors } from "../../helpers"
 import BuildTrackerHeader from "../../components/BuildTrackerHeader/BuildTrackerHeader"
 import ProgressBar from "../../components/ProgressBar/ProgressBar"
 import SearchBar from "../../components/SearchBar/SearchBar"
@@ -17,6 +17,7 @@ import DataTable from "../../components/DataTable/DataTable"
 import { getAllBuildLogs } from "../../services/buildtracker"
 import BuildCardPlaceholder from "../../components/BuildCard/BuildCardPlaceholder"
 import { registerables, Chart } from 'chart.js'
+import Button from "../../components/Button/Button"
 Chart.register(...registerables)
 
 export default function BuildTracker() {
@@ -31,6 +32,7 @@ export default function BuildTracker() {
     const [copyModuleArray, setCopyModuleArray] = useState<ModuleInfo[]>([])
     const [selectedModule, setSelectedModule] = useState(-1)
     const [artsChartData, setArtsChartData] = useState<dataObj>([])
+    const [pagination, setPagination] = useState(10)
     const { darkMode } = useContext(AppContext)
     const buildSamples = generateBuildSamples()
     const CSDOX_URL = process.env.REACT_APP_CSDOX_URL
@@ -41,11 +43,11 @@ export default function BuildTracker() {
 
     useEffect(() => {
         if (openModal && builds) {
-            const selected = builds.find(b => b.id === openModal) || null
+            const selected = builds.find(b => b._id === openModal) || null
             if (selected) {
                 setBuild(selected)
-                setModuleArray(getModuleArray(selected.modules))
-                setCopyModuleArray(getModuleArray(selected.modules))
+                setModuleArray(selected.modules)
+                setCopyModuleArray(selected.modules)
             }
         } else {
             setBuild(null)
@@ -79,6 +81,7 @@ export default function BuildTracker() {
         try {
             setLoading(true)
             const _buildLogs = await getAllBuildLogs()
+            let nameRepetitionCount: dataObj = {}
 
             let _builds = _buildLogs
                 .filter((b: Build) => b.active)
@@ -87,10 +90,25 @@ export default function BuildTracker() {
                         ...b,
                         name: getBuildName(b, i),
                         id: getBuildId(b),
-                        modules: JSON.parse(typeof b.modules === 'string' ? b.modules : '{}')
+                        modules: getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
+                    }
+                }).map((b: Build, index: number, arr: Build[]) => {
+                    const name = b.name || ''
+                    const nameRepeated = countOccurrences(arr, 'name', b.name)
+
+                    nameRepetitionCount = {
+                        ...nameRepetitionCount,
+                        [name]: nameRepetitionCount[name] ? nameRepetitionCount[name] - 1 : nameRepeated
+                    }
+
+                    return {
+                        ...b,
+                        name: nameRepeated > 1 ? `${b.name} #${nameRepetitionCount[name]}` : b.name
                     }
                 })
+
             setBuilds(_builds)
+
             setCopyBuilds(_builds)
             setLoading(false)
         } catch (error) {
@@ -153,7 +171,7 @@ export default function BuildTracker() {
                     <p className={`buildtracker__module-title${darkMode ? '--dark' : ''}`}>{name}</p>
                     <div className="buildtracker__module-row">
                         <div className="buildtracker__module-body">
-                            <TextData label="Status" value={status} inline color={status === 'success' ? 'green' : 'red'} />
+                            <TextData label="Status" value={status} inline color={status?.toLowerCase() === 'success' ? 'green' : 'red'} />
                             <TextData label="Date" value={getDate(date)} inline />
                             <TextData label="ART" value={art} inline />
                             <TextData label="Solution" value={solution} inline />
@@ -172,12 +190,12 @@ export default function BuildTracker() {
                             setSelected={i => {
                                 const selected = (builds || [])[i < 0 ? 0 : i]
                                 setBuild(selected)
-                                setModuleArray(getModuleArray(selected.modules))
-                                setCopyModuleArray(getModuleArray(selected.modules))
-                                setSelectedModule(getModuleArray(selected.modules).findIndex(m => m.name === module.name))
-                                setOpenModal(selected.id || null)
+                                setModuleArray(selected.modules)
+                                setCopyModuleArray(selected.modules)
+                                setSelectedModule((selected.modules).findIndex(m => m.art === module.art && m.name === module.name))
+                                setOpenModal(selected._id || null)
                             }}
-                            selected={builds?.findIndex(b => b.id === openModal)}
+                            selected={builds?.findIndex(b => b._id === openModal)}
                         />
                     </div>
                 </div>
@@ -195,7 +213,7 @@ export default function BuildTracker() {
         return (
             <Modal
                 title={build.name}
-                subtitle={getDate(build.date)}
+                subtitle={getDate(build.createdAt)}
                 onClose={closeModal}
                 style={{ maxHeight: '85vh', width: '50rem' }}
                 contentStyle={{ overflow: 'hidden' }}>
@@ -240,13 +258,13 @@ export default function BuildTracker() {
                                             <div className="buildtracker__modal-table-row">
                                                 <p className="buildtracker__modal-table-text">Built</p>
                                                 <p className="buildtracker__modal-table-value" style={{ color: 'green' }}>
-                                                    {copyModuleArray.filter(m => m.status === 'success').length}
+                                                    {copyModuleArray.filter(m => m.status?.toLowerCase() === 'success').length}
                                                 </p>
                                             </div>
                                             <div className="buildtracker__modal-table-row">
                                                 <p className="buildtracker__modal-table-text">Not built</p>
                                                 <p className="buildtracker__modal-table-value" style={{ color: 'red' }}>
-                                                    {copyModuleArray.filter(m => m.status !== 'success').length}
+                                                    {copyModuleArray.filter(m => m.status?.toLowerCase() !== 'success').length}
                                                 </p>
                                             </div>
                                         </div>
@@ -293,8 +311,8 @@ export default function BuildTracker() {
                 <div className="buildtracker__list" style={{ filter: openModal ? 'blur(7px)' : '' }}>
                     {loading ?
                         // <div className="buildtracker__loading"><HashLoader size={30} color={darkMode ? '#fff' : undefined} /><p>Loading builds activity...</p></div>
-                        Array.from({ length: 15 }).map((_, i) => <BuildCardPlaceholder key={i}/>)
-                        : builds && builds.length ? builds.map((b, i) =>
+                        Array.from({ length: 10 }).map((_, i) => <BuildCardPlaceholder key={i} />)
+                        : builds && builds.length ? builds.slice(0, pagination).map((b, i) =>
                             <BuildCard
                                 key={i}
                                 build={b}
@@ -305,6 +323,17 @@ export default function BuildTracker() {
                             : <p style={{ textAlign: 'center', width: '100%' }}>No active build activity found.</p>
                     }
                 </div>
+                {builds && builds.length &&
+                    <Button
+                        label={pagination < builds.length ? 'Show more builds' : 'Show less'}
+                        handleClick={() => {
+                            if (pagination < builds.length) setPagination(prev => prev + 10)
+                            else setPagination(10)
+                        }}
+                        bgColor="#005585a3"
+                        textColor="#fff"
+                        style={{ width: 'fit-content', margin: '2rem auto' }}
+                    />}
             </div>
         </div>
     )

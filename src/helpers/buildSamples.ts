@@ -74,16 +74,17 @@ export const generateBuildSamples = (buildCount: number = 20, modulesPerBuild: n
     const builds: Build[] = [];
 
     for (let i = 0; i < buildCount; i++) {
-        const modules: Record<string, ModuleInfo> = {};
+        const modules: ModuleInfo[] = [];
         const usedModules = new Set<string>();
         let j = 0
 
-        while (Object.keys(modules).length < modulesPerBuild) {
+        while (modules.length < modulesPerBuild) {
             const moduleName = getRandomElement(moduleNames);
             // if (usedModules.has(moduleName)) continue; // use this if there are 100 or more moduleNames 
             usedModules.add(moduleName);
 
-            modules[moduleName] = {
+            modules.push({
+                name: moduleName,
                 status: (j % 7 === 0 && i % 7 === 0) ? 'failure' : 'success',
                 date: getRandomDate(new Date("2025-03-23"), 10),
                 org: {
@@ -91,7 +92,7 @@ export const generateBuildSamples = (buildCount: number = 20, modulesPerBuild: n
                     solution: getRandomElement(["SWEP"])
                 },
                 version: generateVersion()
-            };
+            })
             j++
         }
 

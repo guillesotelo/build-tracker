@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { deleteBuildLog, getAllBuildLogs, updateBuildLog } from '../../services/buildtracker'
-import { dataObj, ModuleInfo } from '../../types'
+import { Build, dataObj, ModuleInfo } from '../../types'
 import DataTable from '../../components/DataTable/DataTable'
 import { buildLogHeaders } from '../../constants/tableHeaders'
 import BuildTrackerHeader from '../../components/BuildTrackerHeader/BuildTrackerHeader'
 import Modal from '../../components/Modal/Modal'
 import { JsonView } from 'react-json-view-lite';
-import { getBuildName, getBuildStatus, getBuildSuccessRate, getDate } from '../../helpers'
+import { countOccurrences, getBuildName, getBuildStatus, getBuildSuccessRate, getDate, getModuleArray } from '../../helpers'
 import 'react-json-view-lite/dist/index.css';
 import Switch from '../../components/Switch/Swith'
 import Button from '../../components/Button/Button'
@@ -33,17 +33,32 @@ export default function BuildTrackerPanel({ }: Props) {
         try {
             setLoading(true)
             const _buildLogs = await getAllBuildLogs()
+            let nameRepetitionCount: dataObj = {}
             if (_buildLogs && Array.isArray(_buildLogs)) {
                 setBuildLogs(_buildLogs.map(b => {
-                    const modules = JSON.parse(b.modules || '{}')
+                    const modules = getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
                     return {
                         ...b,
                         modules,
-                        status: getBuildStatus({ ...b, modules: JSON.parse(b.modules || '{}') }),
-                        successRate: getBuildSuccessRate(b),
+                        status: getBuildStatus({ ...b, modules }),
+                        successRate: getBuildSuccessRate({ ...b, modules }),
                         name: getBuildName(b)
                     }
-                }))
+                }).map((b: Build, index: number, arr: Build[]) => {
+                    const name = b.name || ''
+                    const nameRepeated = countOccurrences(arr, 'name', b.name)
+
+                    nameRepetitionCount = {
+                        ...nameRepetitionCount,
+                        [name]: nameRepetitionCount[name] ? nameRepetitionCount[name] - 1 : nameRepeated
+                    }
+
+                    return {
+                        ...b,
+                        name: nameRepeated > 1 ? `${b.name} #${nameRepetitionCount[name]}` : b.name
+                    }
+                })
+                )
             }
             setLoading(false)
         } catch (error) {

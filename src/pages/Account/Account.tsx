@@ -164,8 +164,8 @@ export default function Account({ }: Props) {
             <>
               <TextData label='Full Name' value={data.username} />
               <TextData label='Email' value={data.email} />
-              <TextData label='User Type' value={data.isSuper ? 'Super' : 'System Owner'} />
-              <TextData label='Owned Systems' value={getOwnedSystemNames()} />
+              <TextData label='User Type' value={data.isSuper ? 'Super' : 'Editor'} />
+              {/* <TextData label='Owned Systems' value={getOwnedSystemNames()} /> */}
             </>
           }
 

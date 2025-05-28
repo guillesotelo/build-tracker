@@ -89,7 +89,7 @@ export default function BuildCard(props: Props) {
                     {tags?.map((tag: dataObj, i: number) => <p key={i} className={`buildcard__tag-${tag.color || 'default'}`}>{tag.value}</p>)}
                 </div> */}
                 <ProgressBar
-                    label="Score"
+                    label="Success rate"
                     arrData={modules}
                     colors={{ "success": "#00b500", "failure": "#e70000" }}
                     objKey="status"

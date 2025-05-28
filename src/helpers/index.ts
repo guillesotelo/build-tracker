@@ -144,7 +144,7 @@ export const getBuildName = (build: Build, index?: number) => {
     // Removing placeholder for now
     // const placeholder = `Build #${index + 1}`
     const startName = capitalizeFirstLetter(build.target_branch.slice(0, 2))
-    const endName = capitalizeFirstLetter(build.classifier.slice(1).slice(-3))
+    const endName = capitalizeFirstLetter(build.classifier.split('-master-2025')[0].slice(1).slice(-3))
     const placeholder = startName + endName
     return build.name || placeholder
 }

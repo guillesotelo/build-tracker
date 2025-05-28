@@ -5,7 +5,7 @@ import { Build, dataObj, ModuleInfo, onChangeEventType } from "../../types"
 import { AppContext } from "../../AppContext"
 import ModulesTable from "../../components/ModulesTable/ModulesTable"
 import { moduleHeaders } from "../../constants/tableHeaders"
-import { capitalizeFirstLetter, countOccurrences, getBuildName, getDate, getModuleArray, randomColors } from "../../helpers"
+import { countOccurrences, getBuildName, getDate, getModuleArray, randomColors } from "../../helpers"
 import BuildTrackerHeader from "../../components/BuildTrackerHeader/BuildTrackerHeader"
 import ProgressBar from "../../components/ProgressBar/ProgressBar"
 import SearchBar from "../../components/SearchBar/SearchBar"
@@ -82,6 +82,7 @@ export default function BuildTracker() {
             setLoading(true)
             const _buildLogs = await getAllBuildLogs()
             let nameRepetitionCount: dataObj = {}
+            let exists: dataObj = {}
 
             let _builds = _buildLogs
                 .filter((b: Build) => b.active)
@@ -92,19 +93,26 @@ export default function BuildTracker() {
                         id: getBuildId(b),
                         modules: getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
                     }
-                }).map((b: Build, index: number, arr: Build[]) => {
-                    const name = b.name || ''
-                    const nameRepeated = countOccurrences(arr, 'name', b.name)
+                })
+                // .map((b: Build, index: number, arr: Build[]) => {
+                //     const name = b.name || ''
+                //     const nameRepeated = countOccurrences(arr, 'name', b.name)
 
-                    nameRepetitionCount = {
-                        ...nameRepetitionCount,
-                        [name]: nameRepetitionCount[name] ? nameRepetitionCount[name] - 1 : nameRepeated
-                    }
+                //     nameRepetitionCount = {
+                //         ...nameRepetitionCount,
+                //         [name]: nameRepetitionCount[name] ? nameRepetitionCount[name] - 1 : nameRepeated
+                //     }
 
-                    return {
-                        ...b,
-                        name: nameRepeated > 1 ? `${b.name} #${nameRepetitionCount[name]}` : b.name
-                    }
+                //     return {
+                //         ...b,
+                //         name: nameRepeated > 1 ? `${b.name} #${nameRepetitionCount[name]}` : b.name
+                //     }
+                // })
+                .filter((b: Build) => {
+                    const c = b.classifier.split('-master-2025')[0]
+                    if (exists[c + b.target_branch]) return false
+                    exists[c + b.target_branch] = true
+                    return true
                 })
 
             setBuilds(_builds)
@@ -222,7 +230,7 @@ export default function BuildTracker() {
                         <div className="buildtracker__modal-col">
                             <TextData label="Target branch" value={build.target_branch} style={{ marginBottom: '.7rem' }} />
                             <TextData label="Classifier" value={build.classifier} style={{ marginBottom: '.7rem' }} />
-                            <TextData label="Module count" value={copyModuleArray.length} />
+                            <TextData label="Total modules" value={copyModuleArray.length} />
                         </div>
                         <DoughnutChart
                             label="ARTs involved"
@@ -247,7 +255,7 @@ export default function BuildTracker() {
                             <div className="buildtracker__modal-row" style={{ margin: '1.5rem 0 0' }}>
                                 <div className="buildtracker__modal-col" style={{ width: '45%' }}>
                                     <ProgressBar
-                                        label="Score"
+                                        label="Success rate"
                                         arrData={copyModuleArray}
                                         colors={{ "success": "#00b500", "failure": "#e70000" }}
                                         objKey="status"
@@ -311,7 +319,7 @@ export default function BuildTracker() {
                 <div className="buildtracker__list" style={{ filter: openModal ? 'blur(7px)' : '' }}>
                     {loading ?
                         // <div className="buildtracker__loading"><HashLoader size={30} color={darkMode ? '#fff' : undefined} /><p>Loading builds activity...</p></div>
-                        Array.from({ length: 10 }).map((_, i) => <BuildCardPlaceholder key={i} />)
+                        Array.from({ length: 5 }).map((_, i) => <BuildCardPlaceholder key={i} />)
                         : builds && builds.length ? builds.slice(0, pagination).map((b, i) =>
                             <BuildCard
                                 key={i}
@@ -323,16 +331,20 @@ export default function BuildTracker() {
                             : <p style={{ textAlign: 'center', width: '100%' }}>No active build activity found.</p>
                     }
                 </div>
-                {builds && builds.length &&
+                {builds && builds.length && builds.length > 10 &&
                     <Button
-                        label={pagination < builds.length ? 'Show more builds' : 'Show less'}
+                        label={pagination < builds.length ? 'Show older builds' : 'Show less'}
                         handleClick={() => {
                             if (pagination < builds.length) setPagination(prev => prev + 10)
                             else setPagination(10)
                         }}
                         bgColor="#005585a3"
                         textColor="#fff"
-                        style={{ width: 'fit-content', margin: '2rem auto' }}
+                        style={{
+                            width: 'fit-content',
+                            margin: '2rem auto',
+                            animation: 'fade-in-up 2s forwards'
+                        }}
                     />}
             </div>
         </div>

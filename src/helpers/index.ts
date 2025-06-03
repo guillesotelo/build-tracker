@@ -89,11 +89,14 @@ export const toHex = (str: string) => {
 export const getUser = () => localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : {}
 
 
-export const getDate = (dateString: Date | number | string | undefined) => {
+export const getDate = (dateString: Date | number | string | undefined, showTime = true) => {
     if (dateString) {
         const date = new Date(dateString)
         if (date.getHours() === 24) date.setHours(0)
-        return date.toLocaleDateString('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+        const options: any = showTime ?
+            { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }
+            : { year: 'numeric', month: '2-digit', day: '2-digit' }
+        return date.toLocaleDateString('sv-SE', options)
     }
 }
 
@@ -153,7 +156,7 @@ export const capitalizeFirstLetter = (str: string) => {
     return String(str).charAt(0).toUpperCase() + String(str).slice(1)
 }
 
-export const whenDateIs = (date: Date | string | number | undefined) => {
+export const whenDateIs = (date: Date | string | number | undefined, showDates = false) => {
     if (!date) return ''
 
     const current = new Date(date)
@@ -166,10 +169,15 @@ export const whenDateIs = (date: Date | string | number | undefined) => {
     if (today === current.toLocaleDateString()) return 'Today'
     if (yesterday === current.toLocaleDateString()) return 'Yesterday'
 
-    if (current.getTime() >= lastWeek) return 'Last week'
-    if (current.getTime() < lastWeek) return 'Last month'
-    if (current.getTime() < lastMonth) return 'Months ago'
-    if (current.getTime() < lastYear) return 'More than a year ago'
+    if (!showDates) {
+        if (current.getTime() >= lastWeek) return 'Last week'
+        if (current.getTime() < lastWeek) return 'Last month'
+        if (current.getTime() < lastMonth) return 'Months ago'
+        if (current.getTime() < lastYear) return 'More than a year ago'
+        return ''
+    }
+
+    return getDate(current, false)
 }
 
 export const getModuleArray = (modules: dataObj) => {
@@ -189,10 +197,14 @@ export const getModuleArray = (modules: dataObj) => {
     })
 }
 
-export const countOccurrences = (arr: dataObj[], key: string, value: any) => {
+export const countOccurrences = (arr: dataObj[], k: string, v: any, lowercase = false) => {
+    const key = lowercase ? k.toLowerCase() : k
+    const value = lowercase ? v.toLowerCase() : v
     let count = 0
+
     arr.forEach(item => {
         if (item[key] === value) count++
     })
+
     return count
 }

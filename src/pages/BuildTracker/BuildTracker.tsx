@@ -126,9 +126,30 @@ export default function BuildTracker() {
             setBuilds(filtered)
             setCopyBuilds(filtered)
             setLoading(false)
+
+            setTimeout(prioritizeTodaysBuilds)
         } catch (error) {
             setLoading(false)
             console.error(error)
+        }
+    }
+
+    const prioritizeTodaysBuilds = () => {
+        const className = darkMode ? 'buildcard__container--dark' : 'buildcard__container'
+        const todayBuilds = Array.from(document.getElementsByClassName(className)).filter(card => card.innerHTML.includes('Today'))
+
+        if (todayBuilds.length) {
+            const rowDiv = document.createElement('div')
+            const buildList = document.querySelector('.buildtracker__list')
+            rowDiv.className = 'buildtracker__list-row'
+
+            if (buildList) {
+                todayBuilds.forEach(node => {
+                    node.classList.add('buildtracker__list-row-item')
+                    rowDiv.appendChild(node)
+                })
+                buildList.prepend(rowDiv)
+            }
         }
     }
 
@@ -182,9 +203,17 @@ export default function BuildTracker() {
             labels: dates.slice(-10),
             datasets: [{
                 data: modulesBuiltArr.slice(-10),
-                borderColor: darkMode ? '#037bbca3': '#005585a3',
+                borderColor: (ctx: any) => {
+                    return ctx.index && ctx.index === modulesBuiltArr.slice(-10).length - 1 ?
+                        darkMode ? '#fff' : '#000' : darkMode ? '#037bbca3' : '#005585a3'
+                },
+                borderWidth: (ctx: any) => {
+                    return ctx.index && ctx.index === modulesBuiltArr.slice(-10).length - 1 ?
+                        3 : 2
+                },
+                pointBorderWidth: 1,
                 fill: false,
-                tension: 0.1
+                tension: 0.3
             }]
         }
     }
@@ -197,13 +226,15 @@ export default function BuildTracker() {
                 },
                 tooltip: {
                     callbacks: {
-                        title: (ctx: any) =>  `${ctx[0].label}`,
+                        title: (ctx: any) => `${ctx[0].label}`,
                         label: (ctx: any) => ctx.raw + ' modules built',
-                    }
+                    },
+                    displayColors: false
                 }
             },
             scales: {
                 y: {
+                    max: build?.modules.length,
                     ticks: {
                         callback: (value: number) => `${value}`
                     },
@@ -282,7 +313,7 @@ export default function BuildTracker() {
         return (
             <Modal
                 title={build.name}
-                subtitle={getDate(build.createdAt)}
+                subtitle={`${whenDateIs(build.createdAt, true)} ${getDate(build.createdAt)?.split(' ')[1] || ''}`}
                 onClose={closeModal}
                 style={{ maxHeight: '85vh', width: '50rem' }}
                 contentStyle={{ overflow: 'hidden' }}>
@@ -385,7 +416,7 @@ export default function BuildTracker() {
             {openModal && renderBuildModal()}
             <div className="buildtracker__pageview">
                 {/* <h1 className="buildtracker__title" style={{ filter: openModal ? 'blur(7px)' : '' }}>Build activity</h1> */}
-                <div className="buildtracker__list" style={{ filter: openModal ? 'blur(7px)' : '' }}>
+                <div className="buildtracker__list" style={{ filter: openModal ? 'blur(7px)' : '', width: loading ? '70vw' : '' }}>
                     {loading ?
                         // <div className="buildtracker__loading"><HashLoader size={30} color={darkMode ? '#fff' : undefined} /><p>Loading builds activity...</p></div>
                         Array.from({ length: 6 }).map((_, i) => <BuildCardPlaceholder key={i} />)

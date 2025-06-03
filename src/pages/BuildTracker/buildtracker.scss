@@ -64,12 +64,12 @@
 
             &-text {
                 margin: 0 .5rem 0 0;
-                font-size: .9rem;
+                font-size: .8rem;
             }
 
             &-value {
                 margin: 0;
-                font-size: .9rem;
+                font-size: .8rem;
             }
         }
 
@@ -135,6 +135,19 @@
         flex-wrap: wrap;
         gap: 1.5rem;
         justify-content: center;
+        margin-top: 1rem;
+
+        &-row {
+            display: flex;
+            flex-direction: row;
+            gap: 1.5rem;
+            justify-content: center;
+            width: 100%;
+
+            &-item {
+                width: 22rem;
+            }
+        }
     }
 
     &__module {

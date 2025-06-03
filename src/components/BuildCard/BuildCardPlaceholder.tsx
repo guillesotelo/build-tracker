@@ -1,8 +1,9 @@
-import { useContext } from 'react'
+import React, { useContext } from 'react'
 import { AppContext } from '../../AppContext'
 
 type Props = {
     delay?: string
+    style?: React.CSSProperties
 }
 
 export const BuildCardPlaceholderBlock = (darkMode: boolean, height: string | number) => {
@@ -22,7 +23,7 @@ export const BuildCardPlaceholderBlock = (darkMode: boolean, height: string | nu
     )
 }
 
-export default function BuildCardPlaceholder({ delay }: Props) {
+export default function BuildCardPlaceholder({ delay, style }: Props) {
     const { darkMode } = useContext(AppContext)
 
     return (
@@ -37,7 +38,8 @@ export default function BuildCardPlaceholder({ delay }: Props) {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                cursor: 'default'
+                cursor: 'default',
+                ...style
             }}>
             {BuildCardPlaceholderBlock(darkMode, '.6rem')}
             {BuildCardPlaceholderBlock(darkMode, '2rem')}

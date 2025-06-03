@@ -1,5 +1,4 @@
-import { Doughnut } from 'react-chartjs-2'
-import { dataObj } from '../../types'
+import { Doughnut, Line } from 'react-chartjs-2'
 import React, { useContext } from 'react'
 import { AppContext } from '../../AppContext'
 
@@ -8,9 +7,10 @@ type Props = {
     chartData?: any
     style?: React.CSSProperties
     chartOptions?: any
+    type: string
 }
 
-export default function DoughnutChart({ chartData, label, style, chartOptions }: Props) {
+export default function ChartGraph({ chartData, label, style, chartOptions, type }: Props) {
     const { darkMode } = useContext(AppContext)
     const options = {
         plugins: {
@@ -34,7 +34,10 @@ export default function DoughnutChart({ chartData, label, style, chartOptions }:
                 }}>
                 {label}
             </p>
-            <Doughnut data={chartData} options={options} />
+            {type === 'doughnut' ?
+                <Doughnut data={chartData} options={options} />
+                : type === 'line' ? <Line data={chartData} options={options} />
+                    : ''}
         </div>
     )
 }

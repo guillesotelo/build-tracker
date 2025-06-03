@@ -98,7 +98,7 @@ export default function BuildCard(props: Props) {
                 />
                 <div className="buildcard__footer">
                     <p className="buildcard__footer-date">{getDate(date || createdAt)}</p>
-                    <p className="buildcard__footer-when">{whenDateIs(date || createdAt)}</p>
+                    <p className="buildcard__footer-when">{whenDateIs(date || createdAt, true)}</p>
                 </div>
             </div>
         </div>

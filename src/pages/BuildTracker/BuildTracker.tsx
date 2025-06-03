@@ -5,11 +5,11 @@ import { Build, dataObj, ModuleInfo, onChangeEventType } from "../../types"
 import { AppContext } from "../../AppContext"
 import ModulesTable from "../../components/ModulesTable/ModulesTable"
 import { moduleHeaders } from "../../constants/tableHeaders"
-import { countOccurrences, getBuildName, getDate, getModuleArray, randomColors } from "../../helpers"
+import { countOccurrences, getBuildName, getDate, getModuleArray, randomColors, whenDateIs } from "../../helpers"
 import BuildTrackerHeader from "../../components/BuildTrackerHeader/BuildTrackerHeader"
 import ProgressBar from "../../components/ProgressBar/ProgressBar"
 import SearchBar from "../../components/SearchBar/SearchBar"
-import DoughnutChart from "../../components/DoughnutChart/DoughnutChart"
+import ChartGraph from "../../components/ChartGraph/ChartGraph"
 import TextData from "../../components/TextData/TextData"
 import { COLOR_PALETTE, DARK_MODE_COLOR_PALETTE } from "../../constants/app"
 import { generateBuildSamples } from "../../helpers/buildSamples"
@@ -22,6 +22,7 @@ Chart.register(...registerables)
 
 export default function BuildTracker() {
     const [builds, setBuilds] = useState<null | Build[]>(null)
+    const [allBuilds, setAllBuilds] = useState<null | Build[]>(null)
     const [copyBuilds, setCopyBuilds] = useState<null | Build[]>(null)
     const [openModal, setOpenModal] = useState<null | string>(null)
     const [build, setBuild] = useState<null | Build>(null)
@@ -31,7 +32,8 @@ export default function BuildTracker() {
     const [moduleArray, setModuleArray] = useState<ModuleInfo[]>([])
     const [copyModuleArray, setCopyModuleArray] = useState<ModuleInfo[]>([])
     const [selectedModule, setSelectedModule] = useState(-1)
-    const [artsChartData, setArtsChartData] = useState<dataObj>([])
+    const [artsChartData, setArtsChartData] = useState({ datasets: [{}] })
+    const [historicalData, setHistoricalData] = useState<any>({ datasets: [{}] })
     const [pagination, setPagination] = useState(10)
     const { darkMode } = useContext(AppContext)
     const buildSamples = generateBuildSamples()
@@ -74,7 +76,10 @@ export default function BuildTracker() {
             }))
         } else setModuleArray(copyModuleArray)
 
-        if (!searchModules) setArtsChartData(getArtsChartData())
+        if (!searchModules) {
+            setArtsChartData(getArtsChartData())
+            setHistoricalData(getHistoricalData())
+        }
     }, [searchModules, copyModuleArray])
 
     const getBuilds = async () => {
@@ -94,30 +99,32 @@ export default function BuildTracker() {
                         modules: getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
                     }
                 })
-                // .map((b: Build, index: number, arr: Build[]) => {
-                //     const name = b.name || ''
-                //     const nameRepeated = countOccurrences(arr, 'name', b.name)
+            // .map((b: Build, index: number, arr: Build[]) => {
+            //     const name = b.name || ''
+            //     const nameRepeated = countOccurrences(arr, 'name', b.name)
 
-                //     nameRepetitionCount = {
-                //         ...nameRepetitionCount,
-                //         [name]: nameRepetitionCount[name] ? nameRepetitionCount[name] - 1 : nameRepeated
-                //     }
+            //     nameRepetitionCount = {
+            //         ...nameRepetitionCount,
+            //         [name]: nameRepetitionCount[name] ? nameRepetitionCount[name] - 1 : nameRepeated
+            //     }
 
-                //     return {
-                //         ...b,
-                //         name: nameRepeated > 1 ? `${b.name} #${nameRepetitionCount[name]}` : b.name
-                //     }
-                // })
-                .filter((b: Build) => {
-                    const c = b.classifier.split('-master-2025')[0]
-                    if (exists[c + b.target_branch]) return false
-                    exists[c + b.target_branch] = true
-                    return true
-                })
+            //     return {
+            //         ...b,
+            //         name: nameRepeated > 1 ? `${b.name} #${nameRepetitionCount[name]}` : b.name
+            //     }
+            // })
 
-            setBuilds(_builds)
+            setAllBuilds(_builds)
 
-            setCopyBuilds(_builds)
+            const filtered = _builds.filter((b: Build) => {
+                const c = b.classifier.split('-master-2025')[0]
+                if (exists[c + b.target_branch]) return false
+                exists[c + b.target_branch] = true
+                return true
+            })
+
+            setBuilds(filtered)
+            setCopyBuilds(filtered)
             setLoading(false)
         } catch (error) {
             setLoading(false)
@@ -156,6 +163,60 @@ export default function BuildTracker() {
                 data: labels.map(item => chartCalculator(copyModuleArray, 'art', item)),
                 backgroundColor: randomColors(darkMode ? DARK_MODE_COLOR_PALETTE : COLOR_PALETTE).slice(0, copyModuleArray.length)
             }]
+        }
+    }
+
+    const getHistoricalData = () => {
+        let modulesBuiltArr: number[] = []
+        let dates: any[] = []
+
+        allBuilds?.forEach(b => {
+            if (b.name === build?.name) {
+                const modulesBuilt = countOccurrences(b.modules, 'status', 'success', true)
+                modulesBuiltArr.unshift(modulesBuilt)
+                dates.unshift(whenDateIs(b.date || b.createdAt, true))
+            }
+        })
+
+        return {
+            labels: dates.slice(-10),
+            datasets: [{
+                data: modulesBuiltArr.slice(-10),
+                borderColor: darkMode ? '#037bbca3': '#005585a3',
+                fill: false,
+                tension: 0.1
+            }]
+        }
+    }
+
+    const getHistoricalDataOptions = () => {
+        return {
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: (ctx: any) =>  `${ctx[0].label}`,
+                        label: (ctx: any) => ctx.raw + ' modules built',
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: (value: number) => `${value}`
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
         }
     }
 
@@ -226,24 +287,32 @@ export default function BuildTracker() {
                 style={{ maxHeight: '85vh', width: '50rem' }}
                 contentStyle={{ overflow: 'hidden' }}>
                 <div className="buildtracker__modal">
-                    <div className="buildtracker__modal-row" style={{ alignItems: 'center', justifyContent: 'space-evenly' }}>
-                        <div className="buildtracker__modal-col">
+                    <div className="buildtracker__modal-row" style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '100%' }}>
+                        <div className="buildtracker__modal-col" style={{ width: '25%' }}>
                             <TextData label="Target branch" value={build.target_branch} style={{ marginBottom: '.7rem' }} />
                             <TextData label="Classifier" value={build.classifier} style={{ marginBottom: '.7rem' }} />
                             <TextData label="Total modules" value={copyModuleArray.length} />
+                            {/* <ChartGraph
+                                label="ARTs involved"
+                                chartData={artsChartData}
+                                style={{ width: '7rem', textAlign: 'center', marginTop: '1rem' }}
+                                type="doughnut"
+                                chartOptions={{
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        }
+                                    },
+                                    borderColor: 'transparent',
+                                }}
+                            /> */}
                         </div>
-                        <DoughnutChart
-                            label="ARTs involved"
-                            chartData={artsChartData}
-                            style={{ width: '7rem', textAlign: 'center' }}
-                            chartOptions={{
-                                plugins: {
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                borderColor: 'transparent',
-                            }}
+                        <ChartGraph
+                            label="Completion history"
+                            chartData={historicalData}
+                            style={{ textAlign: 'center', width: '50%' }}
+                            type="line"
+                            chartOptions={getHistoricalDataOptions()}
                         />
                     </div>
 
@@ -319,7 +388,7 @@ export default function BuildTracker() {
                 <div className="buildtracker__list" style={{ filter: openModal ? 'blur(7px)' : '' }}>
                     {loading ?
                         // <div className="buildtracker__loading"><HashLoader size={30} color={darkMode ? '#fff' : undefined} /><p>Loading builds activity...</p></div>
-                        Array.from({ length: 5 }).map((_, i) => <BuildCardPlaceholder key={i} />)
+                        Array.from({ length: 6 }).map((_, i) => <BuildCardPlaceholder key={i} />)
                         : builds && builds.length ? builds.slice(0, pagination).map((b, i) =>
                             <BuildCard
                                 key={i}

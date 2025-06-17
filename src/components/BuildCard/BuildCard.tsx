@@ -49,7 +49,7 @@ export default function BuildCard(props: Props) {
         const status = getBuildStatus(build)
         const labels: { [value: string]: string } = {
             'unknown': 'Insufficient data',
-            'failure': 'Build failed',
+            'failure': 'Incomplete',
             'success': 'Successfully built'
         }
         return labels[status]

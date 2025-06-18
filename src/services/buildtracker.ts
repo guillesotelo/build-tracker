@@ -12,9 +12,9 @@ const getConfig = () => {
     return { headers: { authorization: `Bearer ${getUser().token}` } }
 }
 
-const getAllBuildLogs = async () => {
+const getAllBuildLogs = async (params?: dataObj) => {
     try {
-        const buildLogs = await axios.get(`${API_URL}/api/builds/getAll`, { headers: getHeaders() })
+        const buildLogs = await axios.get(`${API_URL}/api/builds/getAll`, { params, headers: getHeaders() })
         return buildLogs.data
     } catch (err) { console.log(err) }
 }

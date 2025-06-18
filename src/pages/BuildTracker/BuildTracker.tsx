@@ -27,6 +27,7 @@ export default function BuildTracker() {
     const [openModal, setOpenModal] = useState<null | string>(null)
     const [build, setBuild] = useState<null | Build>(null)
     const [loading, setLoading] = useState(false)
+    const [loadingModules, setLoadingModules] = useState(false)
     const [search, setSearch] = useState('')
     const [searchModules, setSearchModules] = useState('')
     const [moduleArray, setModuleArray] = useState<ModuleInfo[]>([])
@@ -40,7 +41,7 @@ export default function BuildTracker() {
     const CSDOX_URL = process.env.REACT_APP_CSDOX_URL
 
     useEffect(() => {
-        getBuilds()
+        getBuildsLazy()
     }, [])
 
     useEffect(() => {
@@ -82,10 +83,26 @@ export default function BuildTracker() {
         }
     }, [searchModules, copyModuleArray])
 
-    const getBuilds = async () => {
+    const getBuildsLazy = async () => {
         try {
+            setLoadingModules(true)
             setLoading(true)
-            const _buildLogs = await getAllBuildLogs()
+
+            await getBuilds()
+            setLoading(false)
+
+            await getBuilds(true)
+            setLoadingModules(false)
+        } catch (error) {
+            console.error(error)
+            setLoading(false)
+            setLoadingModules(false)
+        }
+    }
+
+    const getBuilds = async (getModules: boolean = false) => {
+        try {
+            const _buildLogs = getModules ? await getAllBuildLogs({ getModules }) : await getAllBuildLogs()
             let nameRepetitionCount: dataObj = {}
             let exists: dataObj = {}
 
@@ -125,11 +142,8 @@ export default function BuildTracker() {
 
             setBuilds(filtered)
             setCopyBuilds(filtered)
-            setLoading(false)
-
-            setTimeout(prioritizeTodaysBuilds)
+            if (!getModules) setTimeout(prioritizeTodaysBuilds)
         } catch (error) {
-            setLoading(false)
             console.error(error)
         }
     }
@@ -419,13 +433,14 @@ export default function BuildTracker() {
                 <div className="buildtracker__list" style={{ filter: openModal ? 'blur(7px)' : '', width: loading ? '70vw' : '' }}>
                     {loading ?
                         // <div className="buildtracker__loading"><HashLoader size={30} color={darkMode ? '#fff' : undefined} /><p>Loading builds activity...</p></div>
-                        Array.from({ length: 6 }).map((_, i) => <BuildCardPlaceholder key={i} />)
+                        Array.from({ length: builds?.length || 6 }).map((_, i) => <BuildCardPlaceholder key={i} />)
                         : builds && builds.length ? builds.slice(0, pagination).map((b, i) =>
                             <BuildCard
                                 key={i}
                                 build={b}
                                 setOpenModal={setOpenModal}
                                 delay={String(i ? i / 20 : 0) + 's'}
+                                loadingModules={loadingModules}
                             />
                         )
                             : <p style={{ textAlign: 'center', width: '100%' }}>No active build activity found.</p>

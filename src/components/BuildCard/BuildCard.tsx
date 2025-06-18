@@ -7,11 +7,13 @@ import { getBuildStatus, getDate, whenDateIs } from '../../helpers'
 import { Build, dataObj } from '../../types'
 import { AppContext } from '../../AppContext'
 import ProgressBar from '../ProgressBar/ProgressBar'
+import { BuildCardPlaceholderBlock } from './BuildCardPlaceholder'
 
 type Props = {
     build: Build
     setOpenModal: (value: string) => void
     delay?: string
+    loadingModules?: boolean
 }
 
 export default function BuildCard(props: Props) {
@@ -21,7 +23,8 @@ export default function BuildCard(props: Props) {
     const {
         build,
         setOpenModal,
-        delay
+        delay,
+        loadingModules
     } = props
 
     const {
@@ -46,6 +49,7 @@ export default function BuildCard(props: Props) {
     }
 
     const getStatusLabel = () => {
+        if (loadingModules) return 'Reading module data...'
         const status = getBuildStatus(build)
         const labels: { [value: string]: string } = {
             'unknown': 'Insufficient data',
@@ -68,7 +72,7 @@ export default function BuildCard(props: Props) {
     return (
         <div
             className={`buildcard__container${darkMode ? '--dark' : ''}`}
-            onClick={() => setOpenModal(_id || '')}
+            onClick={() => loadingModules ? null : setOpenModal(_id || '')}
             style={{
                 backgroundImage: `linear-gradient(to right bottom, ${darkMode ? 'black' : 'white'}, ${getStatusBG()})`,
                 animationDelay: `${delay || '0'}`
@@ -88,14 +92,16 @@ export default function BuildCard(props: Props) {
                 {/* <div className="buildcard__tags">
                     {tags?.map((tag: dataObj, i: number) => <p key={i} className={`buildcard__tag-${tag.color || 'default'}`}>{tag.value}</p>)}
                 </div> */}
-                <ProgressBar
-                    label="Success rate"
-                    arrData={modules}
-                    colors={{ "success": "#00b500", "failure": "#e70000" }}
-                    objKey="status"
-                    percentageFor='success'
-                    style={{ margin: '.5rem 0' }}
-                />
+                {loadingModules ?
+                    BuildCardPlaceholderBlock(darkMode, '.2rem', '1rem 0')
+                    : <ProgressBar
+                        label="Success rate"
+                        arrData={modules}
+                        colors={{ "success": "#00b500", "failure": "#e70000" }}
+                        objKey="status"
+                        percentageFor='success'
+                        style={{ margin: '.5rem 0' }}
+                    />}
                 <div className="buildcard__footer">
                     <p className="buildcard__footer-date">{getDate(date || createdAt)}</p>
                     <p className="buildcard__footer-when">{whenDateIs(date || createdAt, true)}</p>

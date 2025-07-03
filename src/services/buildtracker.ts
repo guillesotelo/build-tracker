@@ -12,9 +12,16 @@ const getConfig = () => {
     return { headers: { authorization: `Bearer ${getUser().token}` } }
 }
 
-const getAllBuildLogs = async (params?: dataObj) => {
+const getAllBuildLogs = async () => {
     try {
-        const buildLogs = await axios.get(`${API_URL}/api/builds/getAll`, { params, headers: getHeaders() })
+        const buildLogs = await axios.get(`${API_URL}/api/builds/getAll`, { headers: getHeaders() })
+        return buildLogs.data
+    } catch (err) { console.log(err) }
+}
+
+const getUniqueBuildLogs = async () => {
+    try {
+        const buildLogs = await axios.get(`${API_URL}/api/builds/getUnique`, { headers: getHeaders() })
         return buildLogs.data
     } catch (err) { console.log(err) }
 }
@@ -23,6 +30,13 @@ const getBuildLogById = async (_id: string) => {
     try {
         const buildLog = await axios.get(`${API_URL}/api/builds/getById`, { params: { _id }, headers: getHeaders() })
         return buildLog.data
+    } catch (err) { console.log(err) }
+}
+
+const getBuildsByClassAndBranch = async (params: { classifier: string, target_branch: string }) => {
+    try {
+        const buildLogs = await axios.get(`${API_URL}/api/builds/getByClassAndBranch`, { params, headers: getHeaders() })
+        return buildLogs.data
     } catch (err) { console.log(err) }
 }
 
@@ -49,6 +63,8 @@ const deleteBuildLog = async (data: dataObj) => {
 
 export {
     getAllBuildLogs,
+    getUniqueBuildLogs,
+    getBuildsByClassAndBranch,
     createBuildLog,
     getBuildLogById,
     updateBuildLog,

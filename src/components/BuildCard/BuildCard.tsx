@@ -3,7 +3,7 @@ import BuildPending from '../../assets/icons/build-pending.svg'
 import BuildFail from '../../assets/icons/build-fail.svg'
 import BuildUnknown from '../../assets/icons/build-unknown.svg'
 import { useContext, useEffect, useState } from 'react'
-import { getBuildStatus, getDate, whenDateIs } from '../../helpers'
+import { capitalizeFirstLetter, getBuildStatus, getDate, whenDateIs } from '../../helpers'
 import { Build, dataObj } from '../../types'
 import { AppContext } from '../../AppContext'
 import ProgressBar from '../ProgressBar/ProgressBar'
@@ -13,7 +13,6 @@ type Props = {
     build: Build
     setOpenModal: (value: string) => void
     delay?: string
-    loadingModules?: boolean
 }
 
 export default function BuildCard(props: Props) {
@@ -24,7 +23,6 @@ export default function BuildCard(props: Props) {
         build,
         setOpenModal,
         delay,
-        loadingModules
     } = props
 
     const {
@@ -49,7 +47,6 @@ export default function BuildCard(props: Props) {
     }
 
     const getStatusLabel = () => {
-        if (loadingModules) return 'Reading module data...'
         const status = getBuildStatus(build)
         const labels: { [value: string]: string } = {
             'unknown': 'Insufficient data',
@@ -72,7 +69,7 @@ export default function BuildCard(props: Props) {
     return (
         <div
             className={`buildcard__container${darkMode ? '--dark' : ''}`}
-            onClick={() => loadingModules ? null : setOpenModal(_id || '')}
+            onClick={() => setOpenModal(_id || '')}
             style={{
                 backgroundImage: `linear-gradient(to right bottom, ${darkMode ? 'black' : 'white'}, ${getStatusBG()})`,
                 animationDelay: `${delay || '0'}`
@@ -80,31 +77,29 @@ export default function BuildCard(props: Props) {
             <div className="buildcard__wrapper">
                 <div className="buildcard__header">
                     <div className="buildcard__header-row">
-                        <p className="buildcard__header-name">{name}</p>
+                        <p className="buildcard__header-name">{capitalizeFirstLetter(classifier.replace('-', ' '))}</p>
                         <img src={statusIcon} alt="Icon Status" className="buildcard__header-icon" />
                     </div>
                     <div className="buildcard__header-row">
                         <p className="buildcard__header-branch">{target_branch}</p>
-                        <p className="buildcard__header-classifier">{classifier}</p>
+                        {/* <p className="buildcard__header-classifier">{classifier}</p> */}
                     </div>
                 </div>
                 <p className={`buildcard__status-${getBuildStatus(build) || 'unknown'}`}>{getStatusLabel()}</p>
                 {/* <div className="buildcard__tags">
                     {tags?.map((tag: dataObj, i: number) => <p key={i} className={`buildcard__tag-${tag.color || 'default'}`}>{tag.value}</p>)}
                 </div> */}
-                {loadingModules ?
-                    BuildCardPlaceholderBlock(darkMode, '.2rem', '1rem 0')
-                    : <ProgressBar
-                        label="Success rate"
-                        arrData={modules}
-                        colors={{ "success": "#00b500", "failure": "#e70000" }}
-                        objKey="status"
-                        percentageFor='success'
-                        style={{ margin: '.5rem 0' }}
-                    />}
+                <ProgressBar
+                    label="Success rate"
+                    arrData={modules}
+                    colors={{ "success": "#00b500", "failure": "#e70000" }}
+                    objKey="status"
+                    percentageFor='success'
+                    style={{ margin: '.5rem 0' }}
+                />
                 <div className="buildcard__footer">
                     <p className="buildcard__footer-date">{getDate(date || createdAt)}</p>
-                    <p className="buildcard__footer-when">{whenDateIs(date || createdAt, true)}</p>
+                    <p className="buildcard__footer-when">{whenDateIs(date || createdAt)}</p>
                 </div>
             </div>
         </div>

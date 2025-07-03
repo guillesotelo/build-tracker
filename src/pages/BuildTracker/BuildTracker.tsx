@@ -5,7 +5,7 @@ import { Build, dataObj, ModuleInfo, onChangeEventType } from "../../types"
 import { AppContext } from "../../AppContext"
 import ModulesTable from "../../components/ModulesTable/ModulesTable"
 import { moduleHeaders } from "../../constants/tableHeaders"
-import { countOccurrences, getBuildName, getDate, getModuleArray, randomColors, whenDateIs } from "../../helpers"
+import { capitalizeFirstLetter, countOccurrences, getBuildName, getDate, getModuleArray, randomColors, sortArray, whenDateIs } from "../../helpers"
 import BuildTrackerHeader from "../../components/BuildTrackerHeader/BuildTrackerHeader"
 import ProgressBar from "../../components/ProgressBar/ProgressBar"
 import SearchBar from "../../components/SearchBar/SearchBar"
@@ -14,7 +14,7 @@ import TextData from "../../components/TextData/TextData"
 import { COLOR_PALETTE, DARK_MODE_COLOR_PALETTE } from "../../constants/app"
 import { generateBuildSamples } from "../../helpers/buildSamples"
 import DataTable from "../../components/DataTable/DataTable"
-import { getAllBuildLogs } from "../../services/buildtracker"
+import { getAllBuildLogs, getBuildsByClassAndBranch, getUniqueBuildLogs } from "../../services/buildtracker"
 import BuildCardPlaceholder from "../../components/BuildCard/BuildCardPlaceholder"
 import { registerables, Chart } from 'chart.js'
 import Button from "../../components/Button/Button"
@@ -27,7 +27,7 @@ export default function BuildTracker() {
     const [openModal, setOpenModal] = useState<null | string>(null)
     const [build, setBuild] = useState<null | Build>(null)
     const [loading, setLoading] = useState(false)
-    const [loadingModules, setLoadingModules] = useState(false)
+    const [loadingModules, setLoadingModules] = useState(true)
     const [search, setSearch] = useState('')
     const [searchModules, setSearchModules] = useState('')
     const [moduleArray, setModuleArray] = useState<ModuleInfo[]>([])
@@ -49,8 +49,9 @@ export default function BuildTracker() {
             const selected = builds.find(b => b._id === openModal) || null
             if (selected) {
                 setBuild(selected)
-                setModuleArray(selected.modules)
+                setModuleArray(sortArray(selected.modules, 'status'))
                 setCopyModuleArray(selected.modules)
+                getHistoricalData(selected)
             }
         } else {
             setBuild(null)
@@ -70,40 +71,39 @@ export default function BuildTracker() {
 
     useEffect(() => {
         if (searchModules.trim() && copyModuleArray) {
-            setModuleArray(copyModuleArray.filter(b => {
+            setModuleArray(sortArray(copyModuleArray, 'status').filter(b => {
                 b.date = ''
                 return JSON.stringify(Object.values(b)).toLocaleLowerCase()
                     .includes(searchModules.toLocaleLowerCase().trim())
             }))
-        } else setModuleArray(copyModuleArray)
+        } else setModuleArray(sortArray(copyModuleArray, 'status'))
 
         if (!searchModules) {
             setArtsChartData(getArtsChartData())
-            setHistoricalData(getHistoricalData())
+            getHistoricalData()
         }
     }, [searchModules, copyModuleArray])
 
     const getBuildsLazy = async () => {
         try {
-            setLoadingModules(true)
+            // setLoadingModules(true)
             setLoading(true)
 
             await getBuilds()
             setLoading(false)
 
-            await getBuilds(true)
-            setLoadingModules(false)
+            // await getBuilds(true)
+            // setLoadingModules(false)
         } catch (error) {
             console.error(error)
             setLoading(false)
-            setLoadingModules(false)
+            // setLoadingModules(false)
         }
     }
 
-    const getBuilds = async (getModules: boolean = false) => {
+    const getBuilds = async (getAll: boolean = false) => {
         try {
-            const _buildLogs = getModules ? await getAllBuildLogs({ getModules }) : await getAllBuildLogs()
-            let nameRepetitionCount: dataObj = {}
+            const _buildLogs = getAll ? await getAllBuildLogs() : await getUniqueBuildLogs()
             let exists: dataObj = {}
 
             let _builds = _buildLogs
@@ -116,20 +116,6 @@ export default function BuildTracker() {
                         modules: getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
                     }
                 })
-            // .map((b: Build, index: number, arr: Build[]) => {
-            //     const name = b.name || ''
-            //     const nameRepeated = countOccurrences(arr, 'name', b.name)
-
-            //     nameRepetitionCount = {
-            //         ...nameRepetitionCount,
-            //         [name]: nameRepetitionCount[name] ? nameRepetitionCount[name] - 1 : nameRepeated
-            //     }
-
-            //     return {
-            //         ...b,
-            //         name: nameRepeated > 1 ? `${b.name} #${nameRepetitionCount[name]}` : b.name
-            //     }
-            // })
 
             setAllBuilds(_builds)
 
@@ -142,7 +128,7 @@ export default function BuildTracker() {
 
             setBuilds(filtered)
             setCopyBuilds(filtered)
-            if (!getModules) setTimeout(prioritizeTodaysBuilds)
+            if (!getAll) setTimeout(prioritizeTodaysBuilds)
         } catch (error) {
             console.error(error)
         }
@@ -201,19 +187,28 @@ export default function BuildTracker() {
         }
     }
 
-    const getHistoricalData = () => {
+    const getHistoricalData = async (build?: Build) => {
         let modulesBuiltArr: number[] = []
         let dates: any[] = []
 
-        allBuilds?.forEach(b => {
-            if (b.name === build?.name) {
-                const modulesBuilt = countOccurrences(b.modules, 'status', 'success', true)
-                modulesBuiltArr.unshift(modulesBuilt)
-                dates.unshift(whenDateIs(b.date || b.createdAt, true))
-            }
-        })
+        const buildLogs = build ? await getBuildsByClassAndBranch({
+            classifier: build.classifier || '',
+            target_branch: build.target_branch || ''
+        }) : []
 
-        return {
+        buildLogs
+            .forEach((b: Build) => {
+                if (b.active) {
+                    if (!dates.includes(whenDateIs(b.date || b.createdAt, true))) {
+                        const moduleArray = getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
+                        const modulesBuilt = countOccurrences(moduleArray, 'status', 'success', true)
+                        modulesBuiltArr.unshift(modulesBuilt)
+                        dates.unshift(whenDateIs(b.date || b.createdAt, true))
+                    }
+                }
+            })
+
+        setHistoricalData({
             labels: dates.slice(-10),
             datasets: [{
                 data: modulesBuiltArr.slice(-10),
@@ -229,7 +224,8 @@ export default function BuildTracker() {
                 fill: false,
                 tension: 0.3
             }]
-        }
+        })
+        setLoadingModules(!build?._id)
     }
 
     const getHistoricalDataOptions = () => {
@@ -304,7 +300,7 @@ export default function BuildTracker() {
                             setSelected={i => {
                                 const selected = (builds || [])[i < 0 ? 0 : i]
                                 setBuild(selected)
-                                setModuleArray(selected.modules)
+                                setModuleArray(sortArray(selected.modules, 'status'))
                                 setCopyModuleArray(selected.modules)
                                 setSelectedModule((selected.modules).findIndex(m => m.art === module.art && m.name === module.name))
                                 setOpenModal(selected._id || null)
@@ -326,7 +322,7 @@ export default function BuildTracker() {
         if (!build) return ''
         return (
             <Modal
-                title={build.name}
+                title={capitalizeFirstLetter(build.classifier.replace('-', ' '))}
                 subtitle={`${whenDateIs(build.createdAt, true)} ${getDate(build.createdAt)?.split(' ')[1] || ''}`}
                 onClose={closeModal}
                 style={{ maxHeight: '85vh', width: '50rem' }}
@@ -358,6 +354,7 @@ export default function BuildTracker() {
                             style={{ textAlign: 'center', width: '50%' }}
                             type="line"
                             chartOptions={getHistoricalDataOptions()}
+                            loading={loadingModules}
                         />
                     </div>
 
@@ -440,7 +437,6 @@ export default function BuildTracker() {
                                 build={b}
                                 setOpenModal={setOpenModal}
                                 delay={String(i ? i / 20 : 0) + 's'}
-                                loadingModules={loadingModules}
                             />
                         )
                             : <p style={{ textAlign: 'center', width: '100%' }}>No active build activity found.</p>

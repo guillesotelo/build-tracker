@@ -1,6 +1,7 @@
 import { Doughnut, Line } from 'react-chartjs-2'
 import React, { useContext } from 'react'
 import { AppContext } from '../../AppContext'
+import { RotateSpinner } from "react-spinners-kit";
 
 type Props = {
     label?: string
@@ -8,9 +9,10 @@ type Props = {
     style?: React.CSSProperties
     chartOptions?: any
     type: string
+    loading?: boolean
 }
 
-export default function ChartGraph({ chartData, label, style, chartOptions, type }: Props) {
+export default function ChartGraph({ chartData, label, style, chartOptions, type, loading }: Props) {
     const { darkMode } = useContext(AppContext)
     const options = {
         plugins: {
@@ -38,6 +40,7 @@ export default function ChartGraph({ chartData, label, style, chartOptions, type
                 <Doughnut data={chartData} options={options} />
                 : type === 'line' ? <Line data={chartData} options={options} />
                     : ''}
+            {loading ? <div className='doughnutchart__loader'><RotateSpinner size={50} color='#d3d3d3' /></div> : ''}
         </div>
     )
 }

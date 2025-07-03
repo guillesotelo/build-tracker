@@ -4,6 +4,7 @@ const cors = require('cors')
 const app = express()
 const path = require('path')
 const fs = require('fs')
+const { htmlBuildingTemplate } = require("./src/constants/buildTemplate")
 
 const PORT = process.env.PORT || 5001
 

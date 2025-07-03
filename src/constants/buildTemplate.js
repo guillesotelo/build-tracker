@@ -1,4 +1,4 @@
-const { bbLogoBase64 } = require("./bbLogo")
+const { bbLogoBase64 } = require('./bbLogo')
 
 const htmlBuildingTemplate = `
 <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #202020;">
@@ -26,4 +26,6 @@ const htmlBuildingTemplate = `
 </script>
 `
 
-module.exports = { htmlBuildingTemplate }
+module.exports = {
+    htmlBuildingTemplate
+}

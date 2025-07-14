@@ -78,10 +78,8 @@ export default function BuildTracker() {
             }))
         } else setModuleArray(sortArray(copyModuleArray, 'status'))
 
-        if (!searchModules) {
-            setArtsChartData(getArtsChartData())
-            getHistoricalData()
-        }
+        if (!searchModules) setArtsChartData(getArtsChartData())
+
     }, [searchModules, copyModuleArray])
 
     const getBuildsLazy = async () => {
@@ -187,17 +185,25 @@ export default function BuildTracker() {
         }
     }
 
-    const getHistoricalData = async (build?: Build) => {
-        let modulesBuiltArr: number[] = []
-        let dates: any[] = []
+    const getHistoricalData = async (build: Build) => {
+        if (!build._id) return
 
-        const buildLogs = build ? await getBuildsByClassAndBranch({
-            classifier: build.classifier || '',
-            target_branch: build.target_branch || ''
-        }) : []
+        const duedate = localStorage.getItem('duedate')
+        const justFetched = duedate === new Date().toLocaleDateString()
+        const localHistoricalData = justFetched ? JSON.parse(localStorage.getItem('historicalData') || '{}') : null
+        let buildHistorical = {}
 
-        buildLogs
-            .forEach((b: Build) => {
+        if (!localHistoricalData || !localHistoricalData[build._id]) {
+            let modulesBuiltArr: number[] = []
+            let dates: any[] = []
+
+            setLoadingModules(true)
+            const buildLogs = await getBuildsByClassAndBranch({
+                classifier: build.classifier || '',
+                target_branch: build.target_branch || ''
+            })
+
+            buildLogs.forEach((b: Build) => {
                 if (b.active) {
                     if (!dates.includes(whenDateIs(b.date || b.createdAt, true))) {
                         const moduleArray = getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
@@ -208,24 +214,32 @@ export default function BuildTracker() {
                 }
             })
 
-        setHistoricalData({
-            labels: dates.slice(-10),
-            datasets: [{
-                data: modulesBuiltArr.slice(-10),
-                borderColor: (ctx: any) => {
-                    return ctx.index && ctx.index === modulesBuiltArr.slice(-10).length - 1 ?
-                        darkMode ? '#fff' : '#000' : darkMode ? '#037bbca3' : '#005585a3'
-                },
-                borderWidth: (ctx: any) => {
-                    return ctx.index && ctx.index === modulesBuiltArr.slice(-10).length - 1 ?
-                        3 : 2
-                },
-                pointBorderWidth: 1,
-                fill: false,
-                tension: 0.3
-            }]
-        })
-        setLoadingModules(!build?._id)
+            buildHistorical = {
+                labels: dates.slice(-10),
+                datasets: [{
+                    data: modulesBuiltArr.slice(-10),
+                    borderColor: (ctx: any) => {
+                        return ctx.index && ctx.index === modulesBuiltArr.slice(-10).length - 1 ?
+                            darkMode ? '#fff' : '#000' : darkMode ? '#037bbca3' : '#005585a3'
+                    },
+                    borderWidth: (ctx: any) => {
+                        return ctx.index && ctx.index === modulesBuiltArr.slice(-10).length - 1 ?
+                            3 : 2
+                    },
+                    pointBorderWidth: 1,
+                    fill: false,
+                    tension: 0.3
+                }]
+            }
+
+            localHistoricalData[build._id] = buildHistorical
+            localStorage.setItem('historicalData', JSON.stringify(localHistoricalData))
+            localStorage.setItem('duedate', new Date().toLocaleDateString())
+
+        } else buildHistorical = localHistoricalData[build._id]
+
+        setHistoricalData(buildHistorical)
+        setLoadingModules(false)
     }
 
     const getHistoricalDataOptions = () => {

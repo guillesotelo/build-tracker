@@ -26,6 +26,8 @@ export default function ChartGraph({ chartData, label, style, chartOptions, type
         ...chartOptions
     }
 
+    const voidData = { datasets: [], labels: [] }
+
     return (
         <div className="doughnutchart__container" style={style}>
             <p
@@ -38,7 +40,7 @@ export default function ChartGraph({ chartData, label, style, chartOptions, type
             </p>
             {type === 'doughnut' ?
                 <Doughnut data={chartData} options={options} />
-                : type === 'line' ? <Line data={chartData} options={options} />
+                : type === 'line' ? <Line data={loading ? voidData : chartData} options={options} />
                     : ''}
             {loading ? <div className='doughnutchart__loader'><RotateSpinner size={50} color='#d3d3d3' /></div> : ''}
         </div>

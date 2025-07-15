@@ -27,7 +27,7 @@ export default function BuildTracker() {
     const [openModal, setOpenModal] = useState<null | string>(null)
     const [build, setBuild] = useState<null | Build>(null)
     const [loading, setLoading] = useState(false)
-    const [loadingModules, setLoadingModules] = useState(true)
+    const [loadingModules, setLoadingModules] = useState(false)
     const [search, setSearch] = useState('')
     const [searchModules, setSearchModules] = useState('')
     const [moduleArray, setModuleArray] = useState<ModuleInfo[]>([])
@@ -190,10 +190,10 @@ export default function BuildTracker() {
 
         const duedate = localStorage.getItem('duedate')
         const justFetched = duedate === new Date().toLocaleDateString()
-        const localHistoricalData = justFetched ? JSON.parse(localStorage.getItem('historicalData') || '{}') : null
+        const localHistoricalData = justFetched ? JSON.parse(localStorage.getItem('historicalData') || '{}') : {}
         let buildHistorical = {}
 
-        if (!localHistoricalData || !localHistoricalData[build._id]) {
+        if (!Object.keys(localHistoricalData).length || !localHistoricalData[build._id]) {
             let modulesBuiltArr: number[] = []
             let dates: any[] = []
 

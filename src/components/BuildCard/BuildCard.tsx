@@ -1,5 +1,4 @@
 import BuildOk from '../../assets/icons/build-ok.svg'
-import BuildPending from '../../assets/icons/build-pending.svg'
 import BuildFail from '../../assets/icons/build-fail.svg'
 import BuildUnknown from '../../assets/icons/build-unknown.svg'
 import { useContext, useEffect, useState } from 'react'
@@ -7,7 +6,6 @@ import { capitalizeFirstLetter, getBuildStatus, getDate, whenDateIs } from '../.
 import { Build, dataObj } from '../../types'
 import { AppContext } from '../../AppContext'
 import ProgressBar from '../ProgressBar/ProgressBar'
-import { BuildCardPlaceholderBlock } from './BuildCardPlaceholder'
 
 type Props = {
     build: Build

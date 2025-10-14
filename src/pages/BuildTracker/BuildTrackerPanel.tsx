@@ -36,7 +36,7 @@ export default function BuildTrackerPanel({ }: Props) {
             let nameRepetitionCount: dataObj = {}
             if (_buildLogs && Array.isArray(_buildLogs)) {
                 setBuildLogs(_buildLogs.map(b => {
-                    const modules = getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
+                    const modules = b.modules[0] === '[' ? JSON.parse(b.modules) : getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
                     return {
                         ...b,
                         modules,

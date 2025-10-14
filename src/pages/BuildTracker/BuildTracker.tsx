@@ -111,7 +111,7 @@ export default function BuildTracker() {
                         ...b,
                         name: getBuildName(b, i),
                         id: getBuildId(b),
-                        modules: getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
+                        modules: typeof b.modules === 'string' && b.modules[0] === '[' ? JSON.parse(b.modules) : getModuleArray(JSON.parse(typeof b.modules === 'string' ? b.modules : '{}'))
                     }
                 })
 

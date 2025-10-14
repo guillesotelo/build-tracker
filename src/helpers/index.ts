@@ -171,10 +171,10 @@ export const whenDateIs = (date: Date | string | number | undefined, showDates =
 
     if (!showDates) {
         if (current.getTime() >= lastWeek) return 'Last week'
-        if (current.getTime() < lastWeek) return 'Last month'
-        if (current.getTime() < lastMonth) return 'Months ago'
+        if (current.getTime() < lastWeek && current.getTime() > lastMonth) return 'Last month'
+        if (current.getTime() < lastMonth && current.getTime() > lastYear) return 'Months ago'
         if (current.getTime() < lastYear) return 'More than a year ago'
-        return ''
+        return getDate(current)
     }
 
     return getDate(current, false)

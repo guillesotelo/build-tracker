@@ -222,10 +222,10 @@ export const buildLogHeaders =[
         name: 'CREATED',
         value: 'createdAt'
     },
-    {
-        name: 'NAME',
-        value: 'name'
-    },
+    // {
+    //     name: 'NAME',
+    //     value: 'name'
+    // },
     {
         name: 'CLASSIFIER',
         value: 'classifier'

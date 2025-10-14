@@ -96,7 +96,7 @@ export default function DataTable(props: Props) {
     }
 
     const loadingText = () => {
-        return loadingTime > 3 ? <h4>This is taking a little longer than expected...</h4>
+        return loadingTime > 3 ? <h4>Be patient, a lot of data is being loaded...</h4>
             : <h4>{`Loading ${name || 'table data'}...`}</h4>
     }
 

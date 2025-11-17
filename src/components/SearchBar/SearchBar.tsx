@@ -12,7 +12,7 @@ type Props = {
 }
 
 export default function SearchBar(props: Props) {
-    const { darkMode } = useContext(AppContext)
+    const { theme } = useContext(AppContext)
 
     const {
         handleChange,
@@ -27,10 +27,10 @@ export default function SearchBar(props: Props) {
     }
     
     return (
-        <div className={`searchbar__container${darkMode ? '--dark' : ''}`} style={style}>
-            <img src={SearchIcon} className={`searchbar__icon${darkMode ? '--dark' : ''}`} onClick={triggerSearch} draggable={false}/>
+        <div className={`searchbar__container${theme ? '--dark' : ''}`} style={style}>
+            <img src={SearchIcon} className={`searchbar__icon${theme ? '--dark' : ''}`} onClick={triggerSearch} draggable={false}/>
             <input
-                className={`searchbar__input${darkMode ? '--dark' : ''}`}
+                className={`searchbar__input${theme ? '--dark' : ''}`}
                 onChange={handleChange}
                 placeholder={placeholder}
                 type='text'

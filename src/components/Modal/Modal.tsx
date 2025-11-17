@@ -15,7 +15,7 @@ type Props = {
 
 export default function Modal({ children, onClose, title, subtitle, style, contentStyle, logo, showLogo }: Props) {
     const [closeAnimation, setCloseAnimation] = useState('')
-    const { darkMode } = useContext(AppContext)
+    const { theme } = useContext(AppContext)
 
     useEffect(() => {
         const closeOnOuterClick = (e: any) => {
@@ -39,7 +39,7 @@ export default function Modal({ children, onClose, title, subtitle, style, conte
 
     return (
         <div className="modal__wrapper">
-            <div className={`modal__container${darkMode ? '--dark' : ''} ${closeAnimation}`} style={style}>
+            <div className={`modal__container${theme ? '--dark' : ''} ${closeAnimation}`} style={style}>
                 <div className="modal__header">
                     <div className="modal__titles">
                         {showLogo ?
@@ -49,7 +49,7 @@ export default function Modal({ children, onClose, title, subtitle, style, conte
                                     alt="System Logo"
                                     className="systemcard__logo"
                                     style={{
-                                        filter: darkMode && !logo ? 'invert(100%) sepia(5%) saturate(433%) hue-rotate(6deg) brightness(120%) contrast(100%)' : ''
+                                        filter: theme && !logo ? 'invert(100%) sepia(5%) saturate(433%) hue-rotate(6deg) brightness(120%) contrast(100%)' : ''
                                     }}
                                     draggable={false}
                                 />
@@ -60,7 +60,7 @@ export default function Modal({ children, onClose, title, subtitle, style, conte
                         }
                         <h2 className="modal__subtitle">{subtitle}</h2>
                     </div>
-                    <button className={`modal__close${darkMode ? '--dark' : ''}`} onClick={closeModal}>X</button>
+                    <button className={`modal__close${theme ? '--dark' : ''}`} onClick={closeModal}>X</button>
                 </div>
                 <div className="modal__content" style={contentStyle}>
                     {children}

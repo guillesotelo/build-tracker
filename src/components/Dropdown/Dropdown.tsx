@@ -21,7 +21,7 @@ type Props = {
 
 export default function Dropdown(props: Props) {
     const [openDrop, setOpenDrop] = useState(false)
-    const { darkMode, isMobile } = useContext(AppContext)
+    const { theme, isMobile } = useContext(AppContext)
     const dropRef = useRef<HTMLDivElement>(null)
     const optionsRef = useRef<HTMLDivElement>(null)
     const selectRef = useRef<HTMLDivElement>(null)
@@ -90,19 +90,19 @@ export default function Dropdown(props: Props) {
 
     const renderSelectedItem = () => {
         return <div
-            className={`dropdown__select${darkMode ? '--dark' : ''}`}
+            className={`dropdown__select${theme ? '--dark' : ''}`}
             style={{
-                border: openDrop ? '1px solid #105ec6' : darkMode ? '1px solid #424244' : '1px solid lightgray',
+                border: openDrop ? '1px solid #105ec6' : theme ? '1px solid #424244' : '1px solid lightgray',
                 borderBottomRightRadius: openDrop ? 0 : '',
                 borderBottomLeftRadius: openDrop ? 0 : '',
-                filter: openDrop ? darkMode ? 'brightness(120%)' : 'brightness(95%)' : ''
+                filter: openDrop ? theme ? 'brightness(120%)' : 'brightness(95%)' : ''
             }}
             ref={selectRef}
             onClick={() => setOpenDrop(!openDrop)}>
-            <h4 className={`dropdown__selected${darkMode ? '--dark' : ''}`}>
+            <h4 className={`dropdown__selected${theme ? '--dark' : ''}`}>
                 {getSelectValue()}
             </h4>
-            < h4 className={`dropdown__selected${darkMode ? '--dark' : ''}`}>▾</h4>
+            < h4 className={`dropdown__selected${theme ? '--dark' : ''}`}>▾</h4>
         </div>
     }
 
@@ -114,42 +114,42 @@ export default function Dropdown(props: Props) {
 
     const renderSelectedItems = () => {
         return <div
-            className={`dropdown__select${darkMode ? '--dark' : ''}`}
+            className={`dropdown__select${theme ? '--dark' : ''}`}
             style={{
-                border: openDrop ? '1px solid #105ec6' : darkMode ? '1px solid #424244' : '1px solid lightgray',
+                border: openDrop ? '1px solid #105ec6' : theme ? '1px solid #424244' : '1px solid lightgray',
                 borderBottomRightRadius: openDrop ? 0 : '',
                 borderBottomLeftRadius: openDrop ? 0 : '',
-                filter: openDrop ? darkMode ? 'brightness(120%)' : 'brightness(95%)' : ''
+                filter: openDrop ? theme ? 'brightness(120%)' : 'brightness(95%)' : ''
             }}
             ref={selectRef}
             onClick={() => setOpenDrop(!openDrop)}>
             <h4
-                className={`dropdown__selected${darkMode ? '--dark' : ''}`}
+                className={`dropdown__selected${theme ? '--dark' : ''}`}
                 style={{
                     height: multiselect ? 'fit-content' : '',
                     flexWrap: multiselect ? 'wrap' : 'unset',
                 }}>
                 {getSelectValues().length ? getSelectValues()?.map((val, i) =>
-                    <span key={i} className={`dropdown__selected-multi-item${darkMode ? '--dark' : ''}`}>
+                    <span key={i} className={`dropdown__selected-multi-item${theme ? '--dark' : ''}`}>
                         <p className='dropdown__selected-multi-label'>{val}</p>
                         <p className='dropdown__selected-multi-remove' onClick={() => removeItem(i)}>X</p>
                     </span>
-                ) : <h4 style={{ padding: 0 }} className={`dropdown__selected${darkMode ? '--dark' : ''}`}>Select</h4>}
+                ) : <h4 style={{ padding: 0 }} className={`dropdown__selected${theme ? '--dark' : ''}`}>Select</h4>}
             </h4>
-            < h4 className={`dropdown__selected${darkMode ? '--dark' : ''}`}>▾</h4>
+            < h4 className={`dropdown__selected${theme ? '--dark' : ''}`}>▾</h4>
         </div>
     }
 
     const renderDropDownOptions = () => {
         return <div
-            className={`dropdown__options${darkMode ? '--dark' : ''}`}
+            className={`dropdown__options${theme ? '--dark' : ''}`}
             style={{ borderTop: 'none', maxHeight: maxHeight || '' }}
             ref={optionsRef}>
             {options.length ?
                 options.map((option: any, i: number) =>
                     <h4
                         key={i}
-                        className={`dropdown__option${darkMode ? '--dark' : ''}`}
+                        className={`dropdown__option${theme ? '--dark' : ''}`}
                         onClick={() => {
                             if (multiselect) {
                                 if (objKey && selected.filter((el: dataObj) => el[objKey] && el[objKey] === option[objKey]).length) return setOpenDrop(false)
@@ -165,16 +165,16 @@ export default function Dropdown(props: Props) {
                                 objKey ? option[objKey] : option}
                     </h4>)
                 :
-                <h4 className={`dropdown__option${darkMode ? '--dark' : ''}`} style={{ borderTop: 'none' }}>Loading...</h4>
+                <h4 className={`dropdown__option${theme ? '--dark' : ''}`} style={{ borderTop: 'none' }}>Loading...</h4>
             }
         </div>
     }
 
     const renderLoading = () => {
         return (
-            <div className={`dropdown__select${darkMode ? '--dark' : ''}`}>
+            <div className={`dropdown__select${theme ? '--dark' : ''}`}>
                 <h4
-                    className={`dropdown__selected${darkMode ? '--dark' : ''}`}
+                    className={`dropdown__selected${theme ? '--dark' : ''}`}
                     style={{
                         height: multiselect ? 'fit-content' : '',
                         flexWrap: multiselect ? 'wrap' : 'unset',
@@ -187,9 +187,9 @@ export default function Dropdown(props: Props) {
 
     const renderMultiSelect = () => {
         return (
-            <div className={`dropdown__container${darkMode ? '--dark' : ''}`} style={style}>
-                {label ? <h4 className={`dropdown__label${darkMode ? '--dark' : ''}`}>{label}</h4> : ''}
-                <div ref={dropRef} className={`dropdown__select-section${darkMode ? '--dark' : ''}`}>
+            <div className={`dropdown__container${theme ? '--dark' : ''}`} style={style}>
+                {label ? <h4 className={`dropdown__label${theme ? '--dark' : ''}`}>{label}</h4> : ''}
+                <div ref={dropRef} className={`dropdown__select-section${theme ? '--dark' : ''}`}>
                     {loading ? renderLoading() : renderSelectedItems()}
                     {openDrop ? renderDropDownOptions() : ''}
                 </div>
@@ -199,9 +199,9 @@ export default function Dropdown(props: Props) {
 
     const renderSimpleSelect = () => {
         return (
-            <div className={`dropdown__container${darkMode ? '--dark' : ''}`} style={style}>
-                {label ? <h4 className={`dropdown__label${darkMode ? '--dark' : ''}`}>{label}</h4> : ''}
-                <div ref={dropRef} className={`dropdown__select-section${darkMode ? '--dark' : ''}`}>
+            <div className={`dropdown__container${theme ? '--dark' : ''}`} style={style}>
+                {label ? <h4 className={`dropdown__label${theme ? '--dark' : ''}`}>{label}</h4> : ''}
+                <div ref={dropRef} className={`dropdown__select-section${theme ? '--dark' : ''}`}>
                     {loading ? renderLoading() : renderSelectedItem()}
                     {openDrop ? renderDropDownOptions() : ''}
                 </div>

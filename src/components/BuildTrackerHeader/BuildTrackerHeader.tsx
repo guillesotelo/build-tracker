@@ -20,13 +20,13 @@ type Props = {
 }
 
 export default function BuildTrackerHeader({ search, setSearch, onChangeSearch, style }: Props) {
-    const { setDarkMode, darkMode, isLoggedIn } = useContext(AppContext)
+    const { setTheme, theme, isLoggedIn } = useContext(AppContext)
     const history = useHistory()
 
     const switchMode = () => {
-        setDarkMode(!darkMode)
-        localStorage.setItem('preferredMode', JSON.stringify(!darkMode))
-        const event = new Event('darkMode')
+        setTheme(theme ? '' : '--dark')
+        localStorage.setItem('preferredMode', theme ? '' : '--dark')
+        const event = new Event('theme')
         document.dispatchEvent(event)
     }
 
@@ -36,35 +36,35 @@ export default function BuildTrackerHeader({ search, setSearch, onChangeSearch, 
     }
 
     return (
-        <div className={`btheader__container${darkMode ? '--dark' : ''}`} style={style}>
+        <div className={`btheader__container${theme ? '--dark' : ''}`} style={style}>
             <div className="btheader__wrapper">
                 <Tooltip tooltip='Show build activity' inline>
                     <img
-                        src={darkMode ? BTLogoDark : BTLogo}
+                        src={theme ? BTLogoDark : BTLogo}
                         alt="Build Tracker"
                         className="btheader__logo"
                         draggable={false}
-                        style={{ opacity: darkMode ? '.9' : '1' }}
+                        style={{ opacity: theme ? '.9' : '1' }}
                         onClick={() => history.push('/')}
                     />
                 </Tooltip>
                 <div className="btheader__row">
                     {getUser().buildTrackerAccess ?
                         <Tooltip tooltip='Control Panel'>
-                            <img src={ControlPanel} alt="Control Panel" onClick={() => history.push('/control-panel')} draggable={false} className={`header__login-icon${darkMode ? '--dark' : ''}`} style={{ transform: 'scale(1.2)' }} />
+                            <img src={ControlPanel} alt="Control Panel" onClick={() => history.push('/control-panel')} draggable={false} className={`header__login-icon${theme ? '--dark' : ''}`} style={{ transform: 'scale(1.2)' }} />
                         </Tooltip>
                         : ''}
                     <Tooltip tooltip={isLoggedIn ? 'My Account' : 'Login'}>
-                        <img src={UserIcon} alt="User Login" onClick={userOptions} draggable={false} className={`header__login-icon${darkMode ? '--dark' : ''}`} />
+                        <img src={UserIcon} alt="User Login" onClick={userOptions} draggable={false} className={`header__login-icon${theme ? '--dark' : ''}`} />
                     </Tooltip>
                     <Tooltip tooltip='Switch Mode'>
-                        <img onClick={switchMode} src={darkMode ? Day : Night} draggable={false} alt="Switch Mode" className={`header__darkmode${darkMode ? '--dark' : ''}`} />
+                        <img onClick={switchMode} src={theme ? Day : Night} draggable={false} alt="Switch Mode" className={`header__theme${theme ? '--dark' : ''}`} />
                     </Tooltip>
-                    {setSearch && <SearchBar
+                    {/* {setSearch && <SearchBar
                         handleChange={onChangeSearch}
                         value={search}
                         placeholder='Search builds...'
-                    />}
+                    />} */}
                 </div>
             </div>
         </div>

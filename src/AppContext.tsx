@@ -11,8 +11,8 @@ export const AppContext = createContext<AppContextType>({
     setIsSuper: () => { },
     item: '',
     setItem: () => { },
-    darkMode: false,
-    setDarkMode: () => { },
+    theme: '--dark',
+    setTheme: () => { },
     headerLoading: false,
     setHeaderLoading: () => { },
 })
@@ -26,7 +26,7 @@ export const AppProvider = ({ children }: Props) => {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
     const [isSuper, setIsSuper] = useState(false)
     const [item, setItem] = useState('/')
-    const [darkMode, setDarkMode] = useState(JSON.parse(localStorage.getItem('preferredMode') || 'true'))
+    const [theme, setTheme] = useState(localStorage.getItem('preferredMode') || '')
     const [headerLoading, setHeaderLoading] = useState(false)
 
     useEffect(() => {
@@ -42,14 +42,14 @@ export const AppProvider = ({ children }: Props) => {
         const body = document.querySelector('body')
         if (body) {
             body.classList.remove('--dark')
-            if (darkMode) body.classList.add('--dark')
+            if (theme) body.classList.add('--dark')
 
             document.documentElement.setAttribute(
                 "data-color-scheme",
-                darkMode ? "dark" : "light"
+                theme ? "dark" : "light"
             )
         }
-    }, [darkMode])
+    }, [theme])
 
     const verifyUser = async () => {
         const verified = await verifyToken()
@@ -68,8 +68,8 @@ export const AppProvider = ({ children }: Props) => {
         isLoggedIn,
         item,
         setItem,
-        darkMode,
-        setDarkMode,
+        theme,
+        setTheme,
         headerLoading,
         setHeaderLoading
     }), [
@@ -80,8 +80,8 @@ export const AppProvider = ({ children }: Props) => {
         isLoggedIn,
         item,
         setItem,
-        darkMode,
-        setDarkMode,
+        theme,
+        setTheme,
         headerLoading,
         setHeaderLoading
     ])

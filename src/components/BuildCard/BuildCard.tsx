@@ -15,7 +15,7 @@ type Props = {
 
 export default function BuildCard(props: Props) {
     const [statusIcon, setStatusIcon] = useState(BuildUnknown)
-    const { darkMode } = useContext(AppContext)
+    const { theme } = useContext(AppContext)
 
     const {
         build,
@@ -66,10 +66,10 @@ export default function BuildCard(props: Props) {
 
     return (
         <div
-            className={`buildcard__container${darkMode ? '--dark' : ''}`}
+            className={`buildcard__container${theme ? '--dark' : ''}`}
             onClick={() => setOpenModal(_id || '')}
             style={{
-                backgroundImage: `linear-gradient(to right bottom, ${darkMode ? 'black' : 'white'}, ${getStatusBG()})`,
+                backgroundImage: `linear-gradient(to right bottom, ${theme ? 'black' : 'white'}, ${getStatusBG()})`,
                 animationDelay: `${delay || '0'}`
             }}>
             <div className="buildcard__wrapper">

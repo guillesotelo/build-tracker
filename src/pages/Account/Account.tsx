@@ -20,7 +20,7 @@ export default function Account({ }: Props) {
   const [loggedOut, setLoggedOut] = useState(false)
   const [dataIsUpdated, setDataIsUpdated] = useState(false)
   const [edit, setEdit] = useState(false)
-  const { isLoggedIn, setIsLoggedIn, darkMode, setIsSuper, isMobile } = useContext(AppContext) as AppContextType
+  const { isLoggedIn, setIsLoggedIn, theme, setIsSuper, isMobile } = useContext(AppContext) as AppContextType
   const history = useHistory()
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function Account({ }: Props) {
       setIsSuper(false)
       const mode = localStorage.getItem('preferredMode')
       localStorage.clear()
-      localStorage.setItem('preferredMode', mode || 'true')
+      localStorage.setItem('preferredMode', mode || '')
       history.push('/')
     }, 1500)
   }
@@ -103,9 +103,9 @@ export default function Account({ }: Props) {
     <div className="account__container">
       {loading ? <MoonLoader color='#0057ad' size={50} />
         :
-        <div className={`account__details${darkMode ? '--dark' : ''}`}>
+        <div className={`account__details${theme ? '--dark' : ''}`}>
           <h2 className='account__details-title'>Account Information</h2>
-          {!isMobile ? <img src={UserIcon} alt="User Profile" className={`account__details-icon${darkMode ? '--dark' : ''}`} draggable={false} /> : ''}
+          {!isMobile ? <img src={UserIcon} alt="User Profile" className={`account__details-icon${theme ? '--dark' : ''}`} draggable={false} /> : ''}
           {edit ?
             <>
               <InputField

@@ -11,22 +11,22 @@ type Props = {
 }
 
 export default function Switch({ label, on, off, value, setValue, style }: Props) {
-    const { darkMode } = useContext(AppContext)
+    const { theme } = useContext(AppContext)
     return (
         <div
             className="switch__container"
             onClick={() => setValue(!value)}
             style={style}
         >
-            {label ? <p className={`switch__label${darkMode ? '--dark' : ''}`}>{label}</p> : ''}
+            {label ? <p className={`switch__label${theme ? '--dark' : ''}`}>{label}</p> : ''}
             <div
-                className={`switch__row${darkMode ? '--dark' : ''}`}
+                className={`switch__row${theme ? '--dark' : ''}`}
                 style={{
                     backgroundColor: value ? '#a4d8a4' : '',
                 }}>
                 <p className="switch__on">{on}</p>
-                <p className={`switch__slider${value ? '--on' : '--off'}`} style={{ color: darkMode ? 'black' : '' }}></p>
-                <p className="switch__off" style={{ color: darkMode ? 'lightgray' : '' }}>{off}</p>
+                <p className={`switch__slider${value ? '--on' : '--off'}`} style={{ color: theme ? 'black' : '' }}></p>
+                <p className="switch__off" style={{ color: theme ? 'lightgray' : '' }}>{off}</p>
             </div>
         </div>
     )

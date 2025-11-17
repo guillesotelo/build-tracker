@@ -27,8 +27,8 @@ export default function Header() {
     isLoggedIn,
     item,
     setItem,
-    darkMode,
-    setDarkMode,
+    theme,
+    setTheme,
     headerLoading,
     setHeaderLoading,
     isMobile
@@ -80,21 +80,21 @@ export default function Header() {
   }
 
   const switchMode = () => {
-    setDarkMode(!darkMode)
-    localStorage.setItem('preferredMode', JSON.stringify(!darkMode))
-    const event = new Event('darkMode')
+    setTheme(theme ? '' : '--dark')
+    localStorage.setItem('preferredMode', theme ? '' : '--dark')
+    const event = new Event('theme')
     document.dispatchEvent(event)
   }
 
   const renderMobile = () => {
     return (
-      <div className={`header__container${darkMode ? '--dark' : ''}`}>
+      <div className={`header__container${theme ? '--dark' : ''}`}>
         <div className="header__col">
           <img
             src={UserIcon}
             onClick={goToAccount}
             alt='My Account'
-            className={`header__login-icon${darkMode ? '--dark' : ''}`}
+            className={`header__login-icon${theme ? '--dark' : ''}`}
             style={{ padding: 0 }}
             draggable={false}
           />
@@ -105,7 +105,7 @@ export default function Header() {
               src={DDLogo}
               onClick={gotoAbout}
               alt={location.pathname.includes('about') ? 'Show Systems' : 'About Down@Volvo'}
-              className={`header__down-icon${darkMode ? '--dark' : ''}`}
+              className={`header__down-icon${theme ? '--dark' : ''}`}
               style={{ padding: 0 }}
               draggable={false}
             />
@@ -117,114 +117,114 @@ export default function Header() {
               src={Menu}
               onClick={() => setOpenMenu(!openMenu)}
               alt='Menu'
-              className={`header__menu${darkMode ? '--dark' : ''}`}
+              className={`header__menu${theme ? '--dark' : ''}`}
               draggable={false}
             />
             :
             <img
-              src={darkMode ? Day : Night}
+              src={theme ? Day : Night}
               onClick={() => {
-                localStorage.setItem('preferredMode', JSON.stringify(!darkMode))
-                setDarkMode(!darkMode)
+                localStorage.setItem('preferredMode', theme ? '' : '--dark')
+                setTheme(theme ? '' : '--dark')
               }}
               alt="Switch Mode"
-              className={`header__menu${darkMode ? '--dark' : ''}`}
+              className={`header__menu${theme ? '--dark' : ''}`}
               draggable={false}
             />
           }
         </div>
         <div className="header__loading" style={{ width: barWidth }} />
-        <div className={`header__menu-container${openMenu ? '--open' : ''}${darkMode ? '--dark' : ''}`}>
+        <div className={`header__menu-container${openMenu ? '--open' : ''}${theme ? '--dark' : ''}`}>
           <div
             className="header__menu-item"
             style={{
               marginTop: '1.5rem',
-              backgroundColor: item === '/' ? darkMode ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
+              backgroundColor: item === '/' ? theme ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
             }}
             onClick={() => {
               history.push('/')
               setItem('/')
               setOpenMenu(!openMenu)
             }}>
-            <img src={Dashboard} alt="Dashboard" draggable={false} className={`header__menu-item-svg${darkMode ? '--dark' : ''}`} />
+            <img src={Dashboard} alt="Dashboard" draggable={false} className={`header__menu-item-svg${theme ? '--dark' : ''}`} />
             <p className="header__menu-item-label">Dashboard</p>
           </div>
           <div
             className="header__menu-item"
             style={{
-              backgroundColor: item === '/history' ? darkMode ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
+              backgroundColor: item === '/history' ? theme ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
             }}
             onClick={() => {
               history.push('/history')
               setItem('/history')
               setOpenMenu(!openMenu)
             }}>
-            <img src={History} alt="History" draggable={false} className={`header__menu-item-svg${darkMode ? '--dark' : ''}`} />
+            <img src={History} alt="History" draggable={false} className={`header__menu-item-svg${theme ? '--dark' : ''}`} />
             <p className="header__menu-item-label">History</p>
           </div>
 
           <div
             className="header__menu-item"
             style={{
-              backgroundColor: item === '/systems' ? darkMode ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
+              backgroundColor: item === '/systems' ? theme ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
             }}
             onClick={() => {
               history.push('/systems')
               setItem('/systems')
               setOpenMenu(!openMenu)
             }}>
-            <img src={Api} alt="Systems" draggable={false} className={`header__menu-item-svg${darkMode ? '--dark' : ''}`} />
+            <img src={Api} alt="Systems" draggable={false} className={`header__menu-item-svg${theme ? '--dark' : ''}`} />
             <p className="header__menu-item-label">Systems</p>
           </div>
           <div
             className="header__menu-item"
             style={{
-              backgroundColor: item === '/users' ? darkMode ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
+              backgroundColor: item === '/users' ? theme ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
             }}
             onClick={() => {
               history.push('/users')
               setItem('/users')
               setOpenMenu(!openMenu)
             }}>
-            <img src={Users} alt="Users" draggable={false} className={`header__menu-item-svg${darkMode ? '--dark' : ''}`} />
+            <img src={Users} alt="Users" draggable={false} className={`header__menu-item-svg${theme ? '--dark' : ''}`} />
             <p className="header__menu-item-label">Users</p>
           </div>
 
           <div
             className="header__menu-item"
             style={{
-              backgroundColor: item === '/applogs' ? darkMode ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
+              backgroundColor: item === '/applogs' ? theme ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
             }}
             onClick={() => {
               history.push('/applogs')
               setItem('/applogs')
               setOpenMenu(!openMenu)
             }}>
-            <img src={AppLogs} alt="App Logs" draggable={false} className={`header__menu-item-svg${darkMode ? '--dark' : ''}`} />
+            <img src={AppLogs} alt="App Logs" draggable={false} className={`header__menu-item-svg${theme ? '--dark' : ''}`} />
             <p className="header__menu-item-label">App Logs</p>
           </div>
           <div
             className="header__menu-item"
             style={{
-              backgroundColor: item === '/subscriptions' ? darkMode ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
+              backgroundColor: item === '/subscriptions' ? theme ? 'rgb(57, 57, 57)' : 'rgb(237, 237, 237)' : ''
             }}
             onClick={() => {
               history.push('/subscriptions')
               setItem('/subscriptions')
               setOpenMenu(!openMenu)
             }}>
-            <img src={Subscriptions} alt="Subscriptions" draggable={false} className={`header__menu-item-svg${darkMode ? '--dark' : ''}`} />
+            <img src={Subscriptions} alt="Subscriptions" draggable={false} className={`header__menu-item-svg${theme ? '--dark' : ''}`} />
             <p className="header__menu-item-label">Subscriptions</p>
           </div>
           <div
             className="header__menu-item"
             onClick={() => {
-              localStorage.setItem('preferredMode', JSON.stringify(!darkMode))
-              setDarkMode(!darkMode)
+              localStorage.setItem('preferredMode', theme ? '' : '--dark')
+              setTheme(theme ? '' : '--dark')
               setOpenMenu(!openMenu)
             }}>
-            <img src={darkMode ? Day : Night} alt="Switch Mode" draggable={false} className={`header__menu-item-svg${darkMode ? '--dark' : ''}`} />
-            <p className="header__menu-item-label">{darkMode ? 'Light Mode' : 'Dark Mode'}</p>
+            <img src={theme ? Day : Night} alt="Switch Mode" draggable={false} className={`header__menu-item-svg${theme ? '--dark' : ''}`} />
+            <p className="header__menu-item-label">{theme ? 'Light Mode' : 'Dark Mode'}</p>
           </div>
           <p className="header__menu-version">{APP_VERSION}</p>
         </div>
@@ -234,7 +234,7 @@ export default function Header() {
 
   const renderDesktop = () => {
     return (
-      <div className={`header__container${darkMode ? '--dark' : ''}`}>
+      <div className={`header__container${theme ? '--dark' : ''}`}>
         <div className="header__col">
           <Tooltip
             tooltip={location.pathname.includes('about') ? 'Show Systems' : 'About Down@Volvo'}
@@ -243,7 +243,7 @@ export default function Header() {
               src={DDLogo}
               onClick={gotoAbout}
               alt={location.pathname.includes('about') ? 'Show Systems' : 'About Down@Volvo'}
-              className={`header__down-icon${darkMode ? '--dark' : ''}`}
+              className={`header__down-icon${theme ? '--dark' : ''}`}
               draggable={false}
             />
           </Tooltip>
@@ -253,8 +253,8 @@ export default function Header() {
         </div>
         <div className="header__col">
           <div className="header__user-group">
-            <img onClick={switchMode} src={darkMode ? Day : Night} draggable={false} alt="Switch Mode" className={`header__darkmode${darkMode ? '--dark' : ''}`} />
-            <img src={UserIcon} alt="User Login" onClick={userOptions} draggable={false} className={`header__login-icon${darkMode ? '--dark' : ''}`} />
+            <img onClick={switchMode} src={theme ? Day : Night} draggable={false} alt="Switch Mode" className={`header__theme${theme ? '--dark' : ''}`} />
+            <img src={UserIcon} alt="User Login" onClick={userOptions} draggable={false} className={`header__login-icon${theme ? '--dark' : ''}`} />
           </div>
         </div>
         <div className="header__loading" style={{ width: barWidth }} />

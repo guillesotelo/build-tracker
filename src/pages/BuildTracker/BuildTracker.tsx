@@ -36,7 +36,7 @@ export default function BuildTracker() {
     const [artsChartData, setArtsChartData] = useState({ datasets: [{}] })
     const [historicalData, setHistoricalData] = useState<any>({ datasets: [{}] })
     const [pagination, setPagination] = useState(10)
-    const { darkMode } = useContext(AppContext)
+    const { theme } = useContext(AppContext)
     const buildSamples = generateBuildSamples()
     const CSDOX_URL = process.env.REACT_APP_CSDOX_URL
 
@@ -133,7 +133,7 @@ export default function BuildTracker() {
     }
 
     const prioritizeTodaysBuilds = () => {
-        const className = darkMode ? 'buildcard__container--dark' : 'buildcard__container'
+        const className = theme ? 'buildcard__container--dark' : 'buildcard__container'
         const todayBuilds = Array.from(document.getElementsByClassName(className)).filter(card => card.innerHTML.includes('Today'))
 
         if (todayBuilds.length) {
@@ -162,7 +162,7 @@ export default function BuildTracker() {
 
     const onChangeSearchModules = (e: onChangeEventType) => {
         const { value } = e.target || {}
-        setSearchModules(value.trim())
+        setSearchModules(value)
     }
 
     const chartCalculator = (arrData: dataObj[], key: string, value: any) => {
@@ -180,7 +180,7 @@ export default function BuildTracker() {
             labels,
             datasets: [{
                 data: labels.map(item => chartCalculator(copyModuleArray, 'art', item)),
-                backgroundColor: randomColors(darkMode ? DARK_MODE_COLOR_PALETTE : COLOR_PALETTE).slice(0, copyModuleArray.length)
+                backgroundColor: randomColors(theme ? DARK_MODE_COLOR_PALETTE : COLOR_PALETTE).slice(0, copyModuleArray.length)
             }]
         }
     }
@@ -220,7 +220,7 @@ export default function BuildTracker() {
                     data: modulesBuiltArr.slice(-10),
                     borderColor: (ctx: any) => {
                         return ctx.index && ctx.index === modulesBuiltArr.slice(-10).length - 1 ?
-                            darkMode ? '#fff' : '#000' : darkMode ? '#037bbca3' : '#005585a3'
+                            theme ? '#fff' : '#000' : theme ? '#037bbca3' : '#005585a3'
                     },
                     borderWidth: (ctx: any) => {
                         return ctx.index && ctx.index === modulesBuiltArr.slice(-10).length - 1 ?
@@ -258,7 +258,7 @@ export default function BuildTracker() {
             },
             scales: {
                 y: {
-                    max: build?.modules.length,
+                    max: (build?.modules.length || 0),
                     ticks: {
                         callback: (value: number) => `${value}`
                     },
@@ -291,8 +291,8 @@ export default function BuildTracker() {
         return (
             <div className="buildtracker__module">
                 <button onClick={() => setSelectedModule(-1)} className="buildtracker__module-back">Module list</button>
-                <div className={`buildtracker__module-wrapper${darkMode ? '--dark' : ''}`}>
-                    <p className={`buildtracker__module-title${darkMode ? '--dark' : ''}`}>{name}</p>
+                <div className={`buildtracker__module-wrapper${theme ? '--dark' : ''}`}>
+                    <p className={`buildtracker__module-title${theme ? '--dark' : ''}`}>{name}</p>
                     <div className="buildtracker__module-row">
                         <div className="buildtracker__module-body">
                             <TextData label="Status" value={status} inline color={status?.toLowerCase() === 'success' ? 'green' : 'red'} />
@@ -403,13 +403,12 @@ export default function BuildTracker() {
                                         </div>
                                     </div>
                                 </div>
-                                {moduleArray.length ?
-                                    <SearchBar
-                                        handleChange={onChangeSearchModules}
-                                        value={searchModules}
-                                        placeholder='Search modules...'
-                                        style={{ width: '30%', alignSelf: 'flex-start' }}
-                                    /> : ''}
+                                <SearchBar
+                                    handleChange={onChangeSearchModules}
+                                    value={searchModules}
+                                    placeholder='Search modules...'
+                                    style={{ width: '30%', alignSelf: 'flex-start' }}
+                                />
                             </div>
 
                             <ModulesTable
@@ -443,7 +442,7 @@ export default function BuildTracker() {
                 {/* <h1 className="buildtracker__title" style={{ filter: openModal ? 'blur(7px)' : '' }}>Build activity</h1> */}
                 <div className="buildtracker__list" style={{ filter: openModal ? 'blur(7px)' : '', width: loading ? '70vw' : '' }}>
                     {loading ?
-                        // <div className="buildtracker__loading"><HashLoader size={30} color={darkMode ? '#fff' : undefined} /><p>Loading builds activity...</p></div>
+                        // <div className="buildtracker__loading"><HashLoader size={30} color={theme ? '#fff' : undefined} /><p>Loading builds activity...</p></div>
                         Array.from({ length: builds?.length || 6 }).map((_, i) => <BuildCardPlaceholder key={i} />)
                         : builds && builds.length ? builds.slice(0, pagination).map((b, i) =>
                             <BuildCard

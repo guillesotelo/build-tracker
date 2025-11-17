@@ -8,8 +8,8 @@ export type AppContextType = {
     setIsSuper: (value: boolean) => void
     item: string
     setItem: (value: string) => void
-    darkMode: boolean
-    setDarkMode: (value: boolean) => void
+    theme: string
+    setTheme: (value: string) => void
     headerLoading: boolean
     setHeaderLoading: (value: boolean) => void
 }

@@ -12,7 +12,7 @@ import BuildTrackerHeader from './components/BuildTrackerHeader/BuildTrackerHead
 
 function App() {
   const location = useLocation()
-  const { isLoggedIn, darkMode } = useContext(AppContext)
+  const { isLoggedIn, theme } = useContext(AppContext)
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -33,23 +33,23 @@ function App() {
   return (
     <Switch>
       <Route exact path="/">
-        <div className={`page__wrapper${darkMode ? '--dark' : ''}`}>
-          <div className={`page__row${darkMode ? '--dark' : ''}`} style={{ marginLeft: isLoggedIn ? '' : 0 }}>
+        <div className={`page__wrapper${theme ? '--dark' : ''}`}>
+          <div className={`page__row${theme ? '--dark' : ''}`} style={{ marginLeft: isLoggedIn ? '' : 0 }}>
             <BuildTracker />
           </div>
         </div>
       </Route>
 
       <Route exact path="/login">
-        <div className={`page__wrapper${darkMode ? '--dark' : ''}`}>
+        <div className={`page__wrapper${theme ? '--dark' : ''}`}>
           <BuildTrackerHeader />
           <Login />
         </div>
       </Route>
       <Route exact path="/account">
-        <div className={`page__wrapper${darkMode ? '--dark' : ''}`}>
+        <div className={`page__wrapper${theme ? '--dark' : ''}`}>
           <BuildTrackerHeader />
-          <div className={`page__row${darkMode ? '--dark' : ''}`} style={{ marginLeft: isLoggedIn ? '' : 0 }}>
+          <div className={`page__row${theme ? '--dark' : ''}`} style={{ marginLeft: isLoggedIn ? '' : 0 }}>
             <Account />
           </div>
         </div>
@@ -63,9 +63,9 @@ function App() {
 
       {/* FALLBACK PAGE -> RENDER HOME*/}
       <Route>
-        <div className={`page__wrapper${darkMode ? '--dark' : ''}`}>
+        <div className={`page__wrapper${theme ? '--dark' : ''}`}>
           <BuildTrackerHeader />
-          <div className={`page__row${darkMode ? '--dark' : ''}`} style={{ marginLeft: isLoggedIn ? '' : 0 }}>
+          <div className={`page__row${theme ? '--dark' : ''}`} style={{ marginLeft: isLoggedIn ? '' : 0 }}>
             <BuildTracker />
           </div>
         </div>

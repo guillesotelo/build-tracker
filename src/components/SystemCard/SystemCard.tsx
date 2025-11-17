@@ -42,7 +42,7 @@ const SystemCard = (props: Props) => {
     const [loading, setLoading] = useState(true)
     const [showMoreDowntime, setShowMoreDowntime] = useState(false)
     const [status, setStatus] = useState<boolean | null | string | undefined>(null)
-    const { darkMode, headerLoading, setHeaderLoading, isSuper } = useContext(AppContext)
+    const { theme, headerLoading, setHeaderLoading, isSuper } = useContext(AppContext)
 
     const chartHeight = '30vw'
     const chartWidth = '40vw'
@@ -93,10 +93,10 @@ const SystemCard = (props: Props) => {
         if (!status) return 'red'
         if (reportedlyDown || status === 'BUSY') return 'orange'
 
-        let color = darkMode ? '#00b000' : 'green'
+        let color = theme ? '#00b000' : 'green'
         if (item && item.unknown) color = 'gray'
-        if (item.busy) color = darkMode ? '#007f00' : '#006000'
-        if (item.isDown) color = darkMode ? '#006600' : '#003a00'
+        if (item.busy) color = theme ? '#007f00' : '#006000'
+        if (item.isDown) color = theme ? '#006600' : '#003a00'
         return color
     }
 
@@ -106,7 +106,7 @@ const SystemCard = (props: Props) => {
             datasets: [
                 {
                     data: lastDayData.length ? lastDayData.map((el: statusType) => !el.status || el.isDown ? 0 : el.busy ? 0.8 : 1) : [],
-                    backgroundColor: (ctx: any) => lastDayData[ctx.index] && lastDayData[ctx.index].reported ? darkMode ? 'white' : 'black' : 'transparent',
+                    backgroundColor: (ctx: any) => lastDayData[ctx.index] && lastDayData[ctx.index].reported ? theme ? 'white' : 'black' : 'transparent',
                     borderColor: 'transparent',
                     borderWidth: 4,
                     label: 'Reported DOWN by user'
@@ -128,7 +128,7 @@ const SystemCard = (props: Props) => {
         setLastDayChartData,
         lastDayData,
         completeData,
-        darkMode,
+        theme,
         status
     ])
 
@@ -138,7 +138,7 @@ const SystemCard = (props: Props) => {
             datasets: [
                 {
                     data: completeData.length ? completeData.map((el: statusType) => !el.status || el.isDown ? 0 : el.busy ? 0.8 : 1) : [],
-                    backgroundColor: (ctx: any) => completeData[ctx.index] && completeData[ctx.index].reported ? darkMode ? 'white' : 'black' : 'transparent',
+                    backgroundColor: (ctx: any) => completeData[ctx.index] && completeData[ctx.index].reported ? theme ? 'white' : 'black' : 'transparent',
                     borderColor: 'transparent',
                     borderWidth: 4,
                     label: 'Reported DOWN by user'
@@ -160,7 +160,7 @@ const SystemCard = (props: Props) => {
         setCompleteChartData,
         lastDayData,
         completeData,
-        darkMode,
+        theme,
         status
     ])
 
@@ -378,10 +378,10 @@ const SystemCard = (props: Props) => {
         if (event && event.start && event.end) {
             return (
                 <span>
-                    <span className={`systemcard__event-time${darkMode ? '--dark' : ''}`}>{getDate(event.start)}</span>
+                    <span className={`systemcard__event-time${theme ? '--dark' : ''}`}>{getDate(event.start)}</span>
                     <span style={{ fontWeight: 'normal' }}> ➜ </span>
-                    <span className={`systemcard__event-time${darkMode ? '--dark' : ''}`}>{getDate(event.end)}</span>
-                    <div className={`systemcard__event-note${darkMode ? '--dark' : ''}`} dangerouslySetInnerHTML={{ __html: event.note || '' }} />
+                    <span className={`systemcard__event-time${theme ? '--dark' : ''}`}>{getDate(event.end)}</span>
+                    <div className={`systemcard__event-note${theme ? '--dark' : ''}`} dangerouslySetInnerHTML={{ __html: event.note || '' }} />
                 </span>
             )
         }
@@ -457,7 +457,7 @@ const SystemCard = (props: Props) => {
                         return {
                             backgroundColor: lastDayData[ctx.dataIndex].unknown ? 'gray' :
                                 lastDayData[ctx.dataIndex].busy ? 'orange' :
-                                    lastDayData[ctx.dataIndex].reported ? darkMode ? 'white' : 'black' :
+                                    lastDayData[ctx.dataIndex].reported ? theme ? 'white' : 'black' :
                                         lastDayData[ctx.dataIndex].status ? 'green' : 'red',
                             borderWidth: 0,
                             borderRadius: 5,
@@ -481,7 +481,7 @@ const SystemCard = (props: Props) => {
                     display: true,
                     drawBorder: false,
                     drawChartArea: false,
-                    color: darkMode ? '#333333a1' : '#dbdbdb9d'
+                    color: theme ? '#333333a1' : '#dbdbdb9d'
                 }
             },
             y: {
@@ -496,7 +496,7 @@ const SystemCard = (props: Props) => {
                     display: true,
                     drawBorder: false,
                     drawChartArea: false,
-                    color: darkMode ? '#333333a1' : '#dbdbdb9d'
+                    color: theme ? '#333333a1' : '#dbdbdb9d'
                 }
             }
         }
@@ -523,7 +523,7 @@ const SystemCard = (props: Props) => {
                         return {
                             backgroundColor: completeData[ctx.dataIndex].unknown ? 'gray' :
                                 completeData[ctx.dataIndex].busy ? 'orange' :
-                                    completeData[ctx.dataIndex].reported ? darkMode ? 'white' : 'black' :
+                                    completeData[ctx.dataIndex].reported ? theme ? 'white' : 'black' :
                                         completeData[ctx.dataIndex].status ? 'green' : 'red',
                             borderWidth: 0,
                             borderRadius: 5,
@@ -547,7 +547,7 @@ const SystemCard = (props: Props) => {
                     display: true,
                     drawBorder: false,
                     drawChartArea: false,
-                    color: darkMode ? '#333333a1' : '#dbdbdb9d'
+                    color: theme ? '#333333a1' : '#dbdbdb9d'
                 }
             },
             y: {
@@ -562,7 +562,7 @@ const SystemCard = (props: Props) => {
                     display: true,
                     drawBorder: false,
                     drawChartArea: false,
-                    color: (ctx: any) => ctx.tick.value !== .5 ? darkMode ? '#333333a1' : '#dbdbdb9d' : 'transparent'
+                    color: (ctx: any) => ctx.tick.value !== .5 ? theme ? '#333333a1' : '#dbdbdb9d' : 'transparent'
                 }
             }
         }
@@ -572,13 +572,13 @@ const SystemCard = (props: Props) => {
         <div className="systemcard__wrapper" style={{ animationDelay: `${delay || '0'}` }}>
             <>
                 <div
-                    className={`systemcard__container${darkMode ? '--dark' : ''}`}
+                    className={`systemcard__container${theme ? '--dark' : ''}`}
                     style={{
-                        borderColor: darkMode ? '#424244' : '#d3d3d3',
+                        borderColor: theme ? '#424244' : '#d3d3d3',
                         // borderColor: loading ? 'gray' : status ? 'green' : 'red',
                         backgroundImage: loading || (status !== false && status !== true && status !== 'BUSY') ? '' :
-                            status === 'BUSY' ? darkMode ? 'linear-gradient(to right bottom, rgb(0, 0, 0), rgb(255 152 0 / 26%)'
-                                : 'linear-gradient(to right bottom, white, rgb(202 120 0 / 17%))' : darkMode ?
+                            status === 'BUSY' ? theme ? 'linear-gradient(to right bottom, rgb(0, 0, 0), rgb(255 152 0 / 26%)'
+                                : 'linear-gradient(to right bottom, white, rgb(202 120 0 / 17%))' : theme ?
                                 `linear-gradient(to bottom right, #000000, ${status ? '#00600085' : '#7000008c'})`
                                 :
                                 `linear-gradient(to bottom right, white, ${status ? 'rgba(0, 128, 0, 0.120)' : 'rgba(255, 0, 0, 0.120)'})`
@@ -589,14 +589,14 @@ const SystemCard = (props: Props) => {
                             alt="System Logo"
                             className="systemcard__logo"
                             style={{
-                                filter: darkMode && !logo ? 'invert(100%) sepia(5%) saturate(433%) hue-rotate(6deg) brightness(120%) contrast(100%)' : ''
+                                filter: theme && !logo ? 'invert(100%) sepia(5%) saturate(433%) hue-rotate(6deg) brightness(120%) contrast(100%)' : ''
                             }}
                             draggable={false}
                         />
                         <h1 className="systemcard__name">{hasPageMessage() ? '️⚠️ ' : ''}{name || 'Api Name'}</h1>
                     </div>
                     {loading || (status !== false && status !== true && status !== 'BUSY') ?
-                        SystemCardPlaceholderBlock(darkMode)
+                        SystemCardPlaceholderBlock(theme)
                         :
                         <div className="systemcard__graph" onClick={selectSystem}>
                             {!selected && !report && !showDowntime && !subscription ? <Line data={lastDayChartData} height={chartHeight} width={chartWidth} options={chartOptions} /> : ''}
@@ -604,7 +604,7 @@ const SystemCard = (props: Props) => {
                     <div className="systemcard__footer">
                         <h2
                             className="systemcard__status"
-                            style={{ color: loading ? 'gray' : reportedlyDown || status === 'BUSY' ? 'orange' : status ? darkMode ? '#00b000' : 'green' : 'red' }}>
+                            style={{ color: loading ? 'gray' : reportedlyDown || status === 'BUSY' ? 'orange' : status ? theme ? '#00b000' : 'green' : 'red' }}>
                             {loading || (status !== false && status !== true && status !== 'BUSY') ? <p style={{ color: 'gray' }}>Checking status...</p> :
                                 <>
                                     <span style={{ animation: selected || report || subscription ? 'none' : '' }} className='systemcard__status-dot'>
@@ -629,34 +629,34 @@ const SystemCard = (props: Props) => {
                             <div className='systemcard__buttons'>
                                 <Button
                                     handleClick={() => subscribe(_id || '')}
-                                    bgColor={darkMode ? '#353535' : '#dcdcdc'}
-                                    textColor={darkMode ? 'lightgray' : '#323232'}
+                                    bgColor={theme ? '#353535' : '#dcdcdc'}
+                                    textColor={theme ? 'lightgray' : '#323232'}
                                     svg={Subscribe}
                                     tooltip='Subscribe for updates'
                                 />
                                 <Button
                                     handleClick={() => reportIssue(_id || '')}
-                                    bgColor={darkMode ? '#353535' : '#dcdcdc'}
-                                    textColor={darkMode ? 'lightgray' : '#323232'}
+                                    bgColor={theme ? '#353535' : '#dcdcdc'}
+                                    textColor={theme ? 'lightgray' : '#323232'}
                                     svg={Report}
                                     tooltip='Report Issue'
                                 />
                             </div>
                             : !loading && (status || status === false) && lastCheck ?
-                                <p style={{ color: darkMode ? 'lightgray' : 'gray' }} className="systemcard__status-caption">{lastCheck}</p>
+                                <p style={{ color: theme ? 'lightgray' : 'gray' }} className="systemcard__status-caption">{lastCheck}</p>
                                 : ''}
 
                     </div>
                 </div>
                 {downtime && downtime.length ?
                     <div
-                        className={`systemcard__event${darkMode ? '--dark' : ''}`}
+                        className={`systemcard__event${theme ? '--dark' : ''}`}
                         style={{
-                            backgroundColor: isLiveDowntime(downtime[0]) ? darkMode ?
-                                'black' : '#ff6161a6' : darkMode ?
+                            backgroundColor: isLiveDowntime(downtime[0]) ? theme ?
+                                'black' : '#ff6161a6' : theme ?
                                 'black' : 'transparent',
-                            border: isLiveDowntime(downtime[0]) ? darkMode ? '1px solid red'
-                                : '1px solid transparent' : darkMode ? '1px solid #ffc7006b' : '1px solid #dbdbdb',
+                            border: isLiveDowntime(downtime[0]) ? theme ? '1px solid red'
+                                : '1px solid transparent' : theme ? '1px solid #ffc7006b' : '1px solid #dbdbdb',
                             animationDelay: `${delay || '0'}`
                         }}
                         onMouseEnter={() => setShowMoreDowntime(true)}
@@ -667,7 +667,7 @@ const SystemCard = (props: Props) => {
                                 {showMoreDowntime && i > 0 ? <div className='systemcard__event-downtime-separator' /> : ''}
                                 <div
                                     key={i}
-                                    className={`systemcard__event-downtime${darkMode ? '--dark' : ''}`}
+                                    className={`systemcard__event-downtime${theme ? '--dark' : ''}`}
                                     onClick={() => setShowDowntime({ ...time, system, index })}
                                     style={{
                                         display: !showMoreDowntime ? 'none' : '',

@@ -13,11 +13,11 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-const darkMode = JSON.parse(localStorage.getItem('preferredMode') || 'true')
+const theme = localStorage.getItem('preferredMode')
 
 root.render(
   <BrowserRouter>
-    <ToastContainer autoClose={2000} theme={darkMode ? 'dark' : 'light'} />
+    <ToastContainer autoClose={2000} theme={theme ? 'dark' : 'light'} />
     <AppProvider>
       <App />
     </AppProvider>

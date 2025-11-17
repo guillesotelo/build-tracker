@@ -6,7 +6,7 @@ type Props = {
     style?: React.CSSProperties
 }
 
-export const BuildCardPlaceholderBlock = (darkMode: boolean, height: string | number, margin?: string) => {
+export const BuildCardPlaceholderBlock = (theme: string, height: string | number, margin?: string) => {
     return (
         <div className="systemcard__placeholder">
             <div
@@ -14,7 +14,7 @@ export const BuildCardPlaceholderBlock = (darkMode: boolean, height: string | nu
                     height,
                     width: '100%',
                     margin: margin || '1rem',
-                    backgroundImage: darkMode ?
+                    backgroundImage: theme ?
                         'linear-gradient(110deg, #262626 8%, #4f4f4f 18%, #262626 33%)' :
                         'linear - gradient(110deg, #ececec 8 %, #f5f5f5 18 %, #ececec 33 %)'
                 }}
@@ -24,13 +24,13 @@ export const BuildCardPlaceholderBlock = (darkMode: boolean, height: string | nu
 }
 
 export default function BuildCardPlaceholder({ delay, style }: Props) {
-    const { darkMode } = useContext(AppContext)
+    const { theme } = useContext(AppContext)
 
     return (
         <div
-            className={`buildcard__container${darkMode ? '--dark' : ''}`}
+            className={`buildcard__container${theme ? '--dark' : ''}`}
             style={{
-                borderColor: darkMode ? 'gray' : '#d3d3d361',
+                borderColor: theme ? 'gray' : '#d3d3d361',
                 backgroundImage: '',
                 animationDelay: `${delay || '0'}`,
                 // height: '9rem',
@@ -41,9 +41,9 @@ export default function BuildCardPlaceholder({ delay, style }: Props) {
                 cursor: 'default',
                 ...style
             }}>
-            {BuildCardPlaceholderBlock(darkMode, '.6rem')}
-            {BuildCardPlaceholderBlock(darkMode, '2rem')}
-            {BuildCardPlaceholderBlock(darkMode, '.2rem')}
+            {BuildCardPlaceholderBlock(theme, '.6rem')}
+            {BuildCardPlaceholderBlock(theme, '2rem')}
+            {BuildCardPlaceholderBlock(theme, '.2rem')}
         </div>
     )
 }

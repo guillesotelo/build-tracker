@@ -11,13 +11,13 @@ type Props = {
 }
 
 export default function PolarAreaChart({ chartData, label, style, chartOptions }: Props) {
-    const { darkMode } = useContext(AppContext)
+    const { theme } = useContext(AppContext)
     const options = {
         plugins: {
             legend: {
                 // display: false,
                 labels: {
-                    color: darkMode ? 'lightgray' : 'black'
+                    color: theme ? 'lightgray' : 'black'
                 }
             }
         },
@@ -29,7 +29,7 @@ export default function PolarAreaChart({ chartData, label, style, chartOptions }
             <p
                 className="PolarAreachart__label"
                 style={{
-                    color: darkMode ? 'lightgray' : '#263d42',
+                    color: theme ? 'lightgray' : '#263d42',
                     marginBottom: chartOptions && chartOptions.plugins.legend.display === false ? '.5rem' : ''
                 }}>
                 {label}

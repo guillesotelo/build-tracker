@@ -44,7 +44,7 @@ export default function ModulesTable(props: Props) {
     const [startTime, setStartTime] = useState(new Date())
     const [loadingTime, setLoadingTime] = useState(0)
     const [dragging, setDragging] = useState(false)
-    const { darkMode } = useContext(AppContext)
+    const { theme } = useContext(AppContext)
 
     useEffect(() => {
         if (orderDataBy) setTimeout(() => orderBy(orderDataBy), 100)
@@ -134,7 +134,7 @@ export default function ModulesTable(props: Props) {
 
     const getRowStyles = (i: number) => {
         return {
-            backgroundColor: !darkMode ? selected === i ? '#d4e1f6' : i % 2 === 0 ? 'white' : '#f5f5f5'
+            backgroundColor: !theme ? selected === i ? '#d4e1f6' : i % 2 === 0 ? 'white' : '#f5f5f5'
                 : selected === i ? '#5e598b85' : i % 2 === 0 ? '#38383852' : '',
             animationDelay: i > 50 ? '0s' : `${((i || 1) + (maxItems > 10 ? (max || 10) - maxItems : maxItems)) / 30}s`
         }
@@ -144,8 +144,8 @@ export default function ModulesTable(props: Props) {
         return {
             width: i === 0 ? '28%' : '18%', // `${100 / tableHeaders.length}%`,
             color: header.value === 'status' ? row[header.value] === 'pending' ? 'orange' :
-                row[header.value] === 'failure' ? darkMode ? '#ff2d2d' : 'red' :
-                    row[header.value] === 'success' ? darkMode ? '#00d300' : 'green' : 'gray' : '',
+                row[header.value] === 'failure' ? theme ? '#ff2d2d' : 'red' :
+                    row[header.value] === 'success' ? theme ? '#00d300' : 'green' : 'gray' : '',
             // textAlign: header.value === 'status' ? 'center' : 'unset',
         }
     }
@@ -165,17 +165,17 @@ export default function ModulesTable(props: Props) {
     }
 
     const renderNoData = () => {
-        return <div className={`datatable__row${darkMode ? '--dark' : ''}`} style={{ height: '2vw', justifyContent: 'center', cursor: 'default' }}>
+        return <div className={`datatable__row${theme ? '--dark' : ''}`} style={{ height: '2vw', justifyContent: 'center', cursor: 'default' }}>
             {`No ${name || 'data'} to show.`}
         </div>
     }
 
     const renderHeaders = () => {
-        return <div className={`datatable__headers${darkMode ? '--dark' : ''}`}>
+        return <div className={`datatable__headers${theme ? '--dark' : ''}`}>
             {tableHeaders.map((header: dataObj, i: number) =>
                 <h4
                     key={i}
-                    className={`datatable__header${darkMode ? '--dark' : ''}`}
+                    className={`datatable__header${theme ? '--dark' : ''}`}
                     onClick={() => orderBy(header)}
                     style={getHeaderStyles(i)}>
                     {header.name} {Object.keys(ordered).includes(header.name) ? ordered[header.name] ? `▼` : `▲` : ''}
@@ -189,7 +189,7 @@ export default function ModulesTable(props: Props) {
             {tableData.map((row: dataObj, i: number) =>
                 <div
                     key={i}
-                    className={selected === i ? `datatable__row-selected${darkMode ? '--dark' : ''}` : `datatable__row${darkMode ? '--dark' : ''}`}
+                    className={selected === i ? `datatable__row-selected${theme ? '--dark' : ''}` : `datatable__row${theme ? '--dark' : ''}`}
                     onClick={() => setSelected ? i === selected ? setSelected(-1) : setSelected(i) : {}}
                     style={getRowStyles(i)}>
                     {tableHeaders.map((header: dataObj, j: number) =>
@@ -219,7 +219,7 @@ export default function ModulesTable(props: Props) {
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}>
-                                            <div className={selected === i ? `datatable__row-selected${darkMode ? '--dark' : ''}` : `datatable__row${darkMode ? '--dark' : ''}`}
+                                            <div className={selected === i ? `datatable__row-selected${theme ? '--dark' : ''}` : `datatable__row${theme ? '--dark' : ''}`}
                                                 onClick={() => setSelected ? i === selected ? setSelected(-1) : setSelected(i) : {}}
                                                 style={getRowStyles(i)}>
                                                 {tableHeaders.map((header: dataObj, j: number) =>
@@ -244,7 +244,7 @@ export default function ModulesTable(props: Props) {
     }
 
     return (
-        <div className={`datatable__container${darkMode ? '--dark' : ''}`} style={style}>
+        <div className={`datatable__container${theme ? '--dark' : ''}`} style={style}>
             <div className='datatable__titles'>
                 <p className='datatable__title'>{title || ''}</p>
             </div>

@@ -17,7 +17,7 @@ export default function Sidebar({ }: Props) {
     const [versionDate, setVersionDate] = useState('')
     const history = useHistory()
     const location = useLocation()
-    const { isSuper, item, setItem, darkMode, isMobile } = useContext(AppContext)
+    const { isSuper, item, setItem, theme, isMobile } = useContext(AppContext)
 
     useEffect(() => {
         getTooltipVersionDate()
@@ -34,97 +34,97 @@ export default function Sidebar({ }: Props) {
     }
 
     return (
-        <div className={`sidebar__container${darkMode ? '--dark' : ''}`} style={{ display: isMobile ? 'none' : '' }}>
+        <div className={`sidebar__container${theme ? '--dark' : ''}`} style={{ display: isMobile ? 'none' : '' }}>
             <div
-                className={`sidebar__item${darkMode ? '--dark' : ''}`}
+                className={`sidebar__item${theme ? '--dark' : ''}`}
                 onClick={() => {
                     history.push('/')
                     setItem('/')
                 }}
                 style={{
                     marginTop: '1.5rem',
-                    backgroundColor: item === '/' ? darkMode ? '#555555' : 'rgb(237, 237, 237)' : ''
+                    backgroundColor: item === '/' ? theme ? '#555555' : 'rgb(237, 237, 237)' : ''
                 }}>
-                <img src={Dashboard} alt="Dashboard" draggable={false} className={`sidebar__item-svg${darkMode ? '--dark' : ''}`} />
-                <h4 className={`sidebar__item-label${darkMode ? '--dark' : ''}`}>Dashboard</h4>
+                <img src={Dashboard} alt="Dashboard" draggable={false} className={`sidebar__item-svg${theme ? '--dark' : ''}`} />
+                <h4 className={`sidebar__item-label${theme ? '--dark' : ''}`}>Dashboard</h4>
             </div>
             <div
-                className={`sidebar__item${darkMode ? '--dark' : ''}`}
+                className={`sidebar__item${theme ? '--dark' : ''}`}
                 style={{
-                    backgroundColor: item === '/history' ? darkMode ? '#555555' : 'rgb(237, 237, 237)' : ''
+                    backgroundColor: item === '/history' ? theme ? '#555555' : 'rgb(237, 237, 237)' : ''
                 }}
                 onClick={() => {
                     history.push('/history')
                     setItem('/history')
                 }}>
-                <img src={History} alt="History" draggable={false} className={`sidebar__item-svg${darkMode ? '--dark' : ''}`} />
-                <h4 className={`sidebar__item-label${darkMode ? '--dark' : ''}`}>History</h4>
+                <img src={History} alt="History" draggable={false} className={`sidebar__item-svg${theme ? '--dark' : ''}`} />
+                <h4 className={`sidebar__item-label${theme ? '--dark' : ''}`}>History</h4>
             </div>
-            <div className={`sidebar__separator${darkMode ? '--dark' : ''}`}></div>
+            <div className={`sidebar__separator${theme ? '--dark' : ''}`}></div>
             <div
-                className={`sidebar__item${darkMode ? '--dark' : ''}`}
+                className={`sidebar__item${theme ? '--dark' : ''}`}
                 style={{
-                    backgroundColor: item.includes('systems') ? darkMode ? '#555555' : 'rgb(237, 237, 237)' : ''
+                    backgroundColor: item.includes('systems') ? theme ? '#555555' : 'rgb(237, 237, 237)' : ''
                 }}
                 onClick={() => {
                     history.push('/systems')
                     setItem('settings-systems')
                 }}>
-                <img src={Api} alt="Settings" draggable={false} className={`sidebar__item-svg${darkMode ? '--dark' : ''}`} />
-                <h4 className={`sidebar__item-label${darkMode ? '--dark' : ''}`}>Systems</h4>
+                <img src={Api} alt="Settings" draggable={false} className={`sidebar__item-svg${theme ? '--dark' : ''}`} />
+                <h4 className={`sidebar__item-label${theme ? '--dark' : ''}`}>Systems</h4>
             </div>
             {isSuper ?
                 <>
                     <div
-                        className={`sidebar__item${darkMode ? '--dark' : ''}`}
+                        className={`sidebar__item${theme ? '--dark' : ''}`}
                         style={{
-                            backgroundColor: item.includes('users') ? darkMode ? '#555555' : 'rgb(237, 237, 237)' : ''
+                            backgroundColor: item.includes('users') ? theme ? '#555555' : 'rgb(237, 237, 237)' : ''
                         }}
                         onClick={() => {
                             history.push('/users')
                             setItem('settings-users')
                         }}>
-                        <img src={Users} alt="Users" draggable={false} className={`sidebar__item-svg${darkMode ? '--dark' : ''}`} />
-                        <h4 className={`sidebar__item-label${darkMode ? '--dark' : ''}`}>Users</h4>
+                        <img src={Users} alt="Users" draggable={false} className={`sidebar__item-svg${theme ? '--dark' : ''}`} />
+                        <h4 className={`sidebar__item-label${theme ? '--dark' : ''}`}>Users</h4>
                     </div>
-                    <div className={`sidebar__separator${darkMode ? '--dark' : ''}`}></div>
+                    <div className={`sidebar__separator${theme ? '--dark' : ''}`}></div>
                     <div
-                        className={`sidebar__item${darkMode ? '--dark' : ''}`}
+                        className={`sidebar__item${theme ? '--dark' : ''}`}
                         style={{
-                            backgroundColor: item === '/applogs' ? darkMode ? '#555555' : 'rgb(237, 237, 237)' : ''
+                            backgroundColor: item === '/applogs' ? theme ? '#555555' : 'rgb(237, 237, 237)' : ''
                         }}
                         onClick={() => {
                             history.push('/applogs')
                             setItem('/applogs')
                         }}>
-                        <img src={AppLogs} alt="App Logs" draggable={false} className={`sidebar__item-svg${darkMode ? '--dark' : ''}`} />
-                        <h4 className={`sidebar__item-label${darkMode ? '--dark' : ''}`}>App Logs</h4>
+                        <img src={AppLogs} alt="App Logs" draggable={false} className={`sidebar__item-svg${theme ? '--dark' : ''}`} />
+                        <h4 className={`sidebar__item-label${theme ? '--dark' : ''}`}>App Logs</h4>
                     </div>
                     <div
-                        className={`sidebar__item${darkMode ? '--dark' : ''}`}
+                        className={`sidebar__item${theme ? '--dark' : ''}`}
                         style={{
-                            backgroundColor: item === '/subscriptions' ? darkMode ? '#555555' : 'rgb(237, 237, 237)' : ''
+                            backgroundColor: item === '/subscriptions' ? theme ? '#555555' : 'rgb(237, 237, 237)' : ''
                         }}
                         onClick={() => {
                             history.push('/subscriptions')
                             setItem('/subscriptions')
                         }}>
-                        <img src={Subscriptions} alt="Subscriptions" draggable={false} className={`sidebar__item-svg${darkMode ? '--dark' : ''}`} />
-                        <h4 className={`sidebar__item-label${darkMode ? '--dark' : ''}`}>Subscriptions</h4>
+                        <img src={Subscriptions} alt="Subscriptions" draggable={false} className={`sidebar__item-svg${theme ? '--dark' : ''}`} />
+                        <h4 className={`sidebar__item-label${theme ? '--dark' : ''}`}>Subscriptions</h4>
                     </div>
                 </>
                 : ''}
             {/* <div
-                className={`sidebar__item${darkMode ? '--dark' : ''}`}
+                className={`sidebar__item${theme ? '--dark' : ''}`}
                 style={{
-                    backgroundColor: item === '/help' ? darkMode ? '#555555' : 'rgb(237, 237, 237)' : ''
+                    backgroundColor: item === '/help' ? theme ? '#555555' : 'rgb(237, 237, 237)' : ''
                 }}
                 onClick={() => {
                     history.push('/help')
                     setItem('/help')
                 }}>
-                <img src={Help} alt="Help" draggable={false} className={`sidebar__item-svg${darkMode ? '--dark' : ''}`} />
-                <h4 className={`sidebar__item-label${darkMode ? '--dark' : ''}`}>Help</h4>
+                <img src={Help} alt="Help" draggable={false} className={`sidebar__item-svg${theme ? '--dark' : ''}`} />
+                <h4 className={`sidebar__item-label${theme ? '--dark' : ''}`}>Help</h4>
             </div> */}
             <div className="sidebar__version">
                 <Tooltip tooltip={versionDate}>

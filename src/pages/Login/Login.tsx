@@ -16,7 +16,7 @@ export default function Login({ }: Props) {
     const [dataOk, setDataOk] = useState(false)
     const [logged, setLogged] = useState(false)
     const history = useHistory()
-    const { setIsLoggedIn, setIsSuper, darkMode } = useContext(AppContext)
+    const { setIsLoggedIn, setIsSuper, theme } = useContext(AppContext)
 
     useEffect(() => {
         setDataOk(checkData())
@@ -59,7 +59,7 @@ export default function Login({ }: Props) {
 
     return (
         <div className="login__container">
-            <div className={`login__box${darkMode ? '--dark' : ''}`}>
+            <div className={`login__box${theme ? '--dark' : ''}`}>
                 <h2 className='account__details-title'>Sign In</h2>
                 <InputField
                     label="Email"

@@ -18,7 +18,7 @@ type Props = {
 }
 
 export default function InputField(props: Props) {
-    const { darkMode } = useContext(AppContext)
+    const { theme } = useContext(AppContext)
     let isEnterKeyListenerAdded = false
 
     const {
@@ -54,9 +54,9 @@ export default function InputField(props: Props) {
 
     return type === 'textarea' ?
         <div className='inputfield__container' style={style}>
-            {label ? <h2 className={`inputfield__label${darkMode ? '--dark' : ''}`}>{label}</h2> : ''}
+            {label ? <h2 className={`inputfield__label${theme ? '--dark' : ''}`}>{label}</h2> : ''}
             <textarea
-                className={className || `textarea__default${darkMode ? '--dark' : ''}`}
+                className={className || `textarea__default${theme ? '--dark' : ''}`}
                 placeholder={placeholder || ''}
                 onChange={e => updateData ? updateData(name, e) : null}
                 value={value || undefined}
@@ -67,10 +67,10 @@ export default function InputField(props: Props) {
         </div>
         :
         <div className='inputfield__container' style={style}>
-            {label ? <h2 className={`inputfield__label${darkMode ? '--dark' : ''}`}>{label}</h2> : ''}
+            {label ? <h2 className={`inputfield__label${theme ? '--dark' : ''}`}>{label}</h2> : ''}
             <input
                 type={type || 'text'}
-                className={className || `inputfield__default${darkMode ? '--dark' : ''}`}
+                className={className || `inputfield__default${theme ? '--dark' : ''}`}
                 placeholder={placeholder || ''}
                 onChange={e => updateData ? updateData(name, e) : null}
                 value={value || undefined}

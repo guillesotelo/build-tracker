@@ -77,7 +77,7 @@ export default function Help() {
         </p>
         <h4 className="about__subtitle">Stargate Team</h4>
         94530 HP System Architecture
-        <p className="about__text"><a href=`\${process.env.REACT_APP_CONTACT_EMAIL}`>{process.env.REACT_APP_CONTACT_EMAIL}</a></p>
+        <p className="about__text"><a href={`${process.env.REACT_APP_CONTACT_EMAIL}`}>{process.env.REACT_APP_CONTACT_EMAIL}</a></p>
         <p><i>Last app update: {versionDate}</i></p>
       </div>
     </div>
